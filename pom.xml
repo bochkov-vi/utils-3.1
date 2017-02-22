@@ -8,8 +8,8 @@
     <artifactId>utils</artifactId>
     <version>3.0</version>
     <modules>
-        <module>jsf-util-3</module>
-        <module>entity-utils-3</module>
+        <module>jsf-utils</module>
+        <module>entity-utils</module>
     </modules>
     <packaging>pom</packaging>
     <build>
