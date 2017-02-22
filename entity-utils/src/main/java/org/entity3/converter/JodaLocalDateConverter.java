@@ -15,7 +15,7 @@ import java.sql.Date;
  * @author bochkov
  */
 @Converter(autoApply = true)
-public class LocalDateConverter implements AttributeConverter<LocalDate, Date> {
+public class JodaLocalDateConverter implements AttributeConverter<LocalDate, Date> {
 
     public Date convertToDatabaseColumn(LocalDate attribute) {
         return attribute == null ? null : new Date(attribute.toDateTimeAtStartOfDay().getMillis());

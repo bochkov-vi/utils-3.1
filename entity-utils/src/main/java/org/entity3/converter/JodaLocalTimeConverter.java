@@ -15,7 +15,7 @@ import java.sql.Time;
  * @author bochkov
  */
 @Converter(autoApply = true)
-public class LocalTimeConverter implements AttributeConverter<LocalTime, Time> {
+public class JodaLocalTimeConverter implements AttributeConverter<LocalTime, Time> {
 
     public Time convertToDatabaseColumn(LocalTime attribute) {
         return attribute == null ? null : new Time(attribute.toDateTimeToday().getMillis());

@@ -15,7 +15,7 @@ import java.sql.Timestamp;
  * @author bochkov
  */
 @Converter(autoApply = true)
-public class DateTimeConverter implements AttributeConverter<DateTime, Timestamp> {
+public class JodaDateTimeConverter implements AttributeConverter<DateTime, Timestamp> {
 
     public Timestamp convertToDatabaseColumn(DateTime attribute) {
         return attribute == null ? null : new Timestamp(((DateTime) attribute).getMillis());
