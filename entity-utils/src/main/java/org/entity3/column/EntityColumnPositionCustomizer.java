@@ -49,7 +49,7 @@ public class EntityColumnPositionCustomizer implements DescriptorCustomizer {
         for (Field field : fields) {
             if (field.isAnnotationPresent(ColumnPosition.class)) {
                 ColumnPosition cp = field.getAnnotation(ColumnPosition.class);
-                columnOrder.put(field.getName(), cp.position());
+                columnOrder.put(field.getName(), cp.value());
             }
         }
         if (classFile.getSuperclass() != null && classFile.getSuperclass() != Object.class) {
