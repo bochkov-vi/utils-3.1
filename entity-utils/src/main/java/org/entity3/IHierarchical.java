@@ -17,9 +17,9 @@ import java.util.List;
  */
 public interface IHierarchical<ID extends Serializable, T extends IHierarchical> extends IIdable<ID>{
 
-    List<T> getChildList();
+    List<T> getChilds();
 
-    List<T> getParentList();
+    List<T> getParents();
 
     default boolean isCanHaveChilds() {
         return true;
@@ -96,7 +96,7 @@ public interface IHierarchical<ID extends Serializable, T extends IHierarchical>
     }
 
     default T getFirstParent() {
-        return Iterables.getFirst(getParentList(), (T) this);
+        return Iterables.getFirst(getParents(), (T) this);
     }
 
     default void setParentList(List<T> parentList) {
