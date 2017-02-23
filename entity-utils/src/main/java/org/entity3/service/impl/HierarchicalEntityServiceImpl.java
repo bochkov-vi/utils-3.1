@@ -74,10 +74,10 @@ public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID ,
 
 
     public <S extends T> S save(S s) {
-        List<T> currentChilds = MoreObjects.firstNonNull(s.getChildList(), ImmutableList.<T>of());
+        List<T> currentChilds = MoreObjects.firstNonNull(s.getChilds(), ImmutableList.<T>of());
 
         for (T child : currentChilds) {
-            List<T> parents = MoreObjects.firstNonNull(child.getParentList(), ImmutableList.<T>of());
+            List<T> parents = MoreObjects.firstNonNull(child.getParents(), ImmutableList.<T>of());
             if (!parents.contains(s)) {
                 child.setParentList((ImmutableList.copyOf(ImmutableSet.copyOf(Iterables.concat(ImmutableList.of((T) s), parents)))));
             }
@@ -85,9 +85,9 @@ public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID ,
         if (!s.isNew()) {
             ID id = s.getId();
             T old = getRepository().findOne(id);
-            List<T> oldChilds = MoreObjects.firstNonNull(old.getChildList(), ImmutableList.<T>of());
+            List<T> oldChilds = MoreObjects.firstNonNull(old.getChilds(), ImmutableList.<T>of());
             for (T ch : Collections2.filter(oldChilds, Predicates.not(Predicates.in(currentChilds)))) {
-                ch.setParentList(ImmutableList.copyOf(Sets.difference(ImmutableSet.of((T) s), ImmutableSet.copyOf(MoreObjects.firstNonNull(ch.getParentList(), ImmutableList.<T>of())))));
+                ch.setParentList(ImmutableList.copyOf(Sets.difference(ImmutableSet.of((T) s), ImmutableSet.copyOf(MoreObjects.firstNonNull(ch.getParents(), ImmutableList.<T>of())))));
                 getRepository().save(ch);
             }
         }

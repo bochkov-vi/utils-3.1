@@ -17,8 +17,8 @@ public class ChildIteratorExtractor<T extends IHierarchical> implements Iterator
 
 
     public Iterator<T> extractIterator(T e) {
-        if (e != null && e.getChildList() != null && !e.getChildList().isEmpty() && e.isCanHaveChilds()) {
-            return e.getChildList().iterator();
+        if (e != null && e.getChilds() != null && !e.getChilds().isEmpty() && e.isCanHaveChilds()) {
+            return e.getChilds().iterator();
         } else {
             return null;
         }

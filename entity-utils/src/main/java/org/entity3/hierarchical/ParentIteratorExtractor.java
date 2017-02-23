@@ -17,8 +17,8 @@ public class ParentIteratorExtractor<T extends IHierarchical> implements Iterato
 
 
     public Iterator<T> extractIterator(T e) {
-        if (e != null && e.getParentList() != null && !e.getParentList().isEmpty() && e.isCanHaveParents()) {
-            return e.getParentList().iterator();
+        if (e != null && e.getParents() != null && !e.getParents().isEmpty() && e.isCanHaveParents()) {
+            return e.getParents().iterator();
         } else {
             return null;
         }
