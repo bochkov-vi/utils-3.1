@@ -99,11 +99,11 @@ public interface IHierarchical<ID extends Serializable, T extends IHierarchical>
         return Iterables.getFirst(getParents(), (T) this);
     }
 
-    default void setParentList(List<T> parentList) {
+    default void setChilds(List<T> parentList) {
         throw new UnsupportedOperationException(getClass().getName() + " method setParentList not supported");
     }
 
-    default void setChildList(List<T> childList) {
+    default void setParents(List<T> childList) {
         throw new UnsupportedOperationException(getClass().getName() + " method setChildList not supported");
     }
 
