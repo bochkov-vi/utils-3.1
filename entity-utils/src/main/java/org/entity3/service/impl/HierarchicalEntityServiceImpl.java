@@ -4,11 +4,11 @@
  */
 package org.entity3.service.impl;
 
-import org.entity3.IHierarchical;
-import org.entity3.service.HierarchicalEntityService;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Predicates;
 import com.google.common.collect.*;
+import org.entity3.IHierarchical;
+import org.entity3.service.HierarchicalEntityService;
 import org.springframework.data.domain.Auditable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.domain.Specifications;
@@ -21,7 +21,7 @@ import java.util.List;
  * @param <T>
  * @author viktor
  */
-public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID ,T> & Auditable<?, ID>, ID extends Serializable> extends AuditableEntityServiceImpl<T, ID> implements HierarchicalEntityService<T, ID> {
+public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID, T> & Auditable<?, ID>, ID extends Serializable> extends AuditableEntityServiceImpl<T, ID> implements HierarchicalEntityService<T, ID> {
 
     public HierarchicalEntityServiceImpl(Class<T> entityClass, String... maskeProperty) {
         super(entityClass, maskeProperty);
@@ -30,7 +30,6 @@ public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID ,
     protected HierarchicalEntityServiceImpl() {
         super();
     }
-
 
 
     public List<T> findByMaskAndEmtyChilds(String mask) {
@@ -79,7 +78,7 @@ public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID ,
         for (T child : currentChilds) {
             List<T> parents = MoreObjects.firstNonNull(child.getParents(), ImmutableList.<T>of());
             if (!parents.contains(s)) {
-                child.setParentList((ImmutableList.copyOf(ImmutableSet.copyOf(Iterables.concat(ImmutableList.of((T) s), parents)))));
+                child.setParents((ImmutableList.copyOf(ImmutableSet.copyOf(Iterables.concat(ImmutableList.of((T) s), parents)))));
             }
         }
         if (!s.isNew()) {
@@ -87,7 +86,7 @@ public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID ,
             T old = getRepository().findOne(id);
             List<T> oldChilds = MoreObjects.firstNonNull(old.getChilds(), ImmutableList.<T>of());
             for (T ch : Collections2.filter(oldChilds, Predicates.not(Predicates.in(currentChilds)))) {
-                ch.setParentList(ImmutableList.copyOf(Sets.difference(ImmutableSet.of((T) s), ImmutableSet.copyOf(MoreObjects.firstNonNull(ch.getParents(), ImmutableList.<T>of())))));
+                ch.setParents(ImmutableList.copyOf(Sets.difference(ImmutableSet.of((T) s), ImmutableSet.copyOf(MoreObjects.firstNonNull(ch.getParents(), ImmutableList.<T>of())))));
                 getRepository().save(ch);
             }
         }
