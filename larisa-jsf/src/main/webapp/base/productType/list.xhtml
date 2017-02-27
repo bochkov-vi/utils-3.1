@@ -1,0 +1,57 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                template="../template.xhtml">
+
+    <ui:define name="content">
+        <!--@elvariable id="e" type="larisa.entity.ProductType"-->
+        <p:toolbar>
+            <p:toolbarGroup>
+                <p:button icon="fa fa-document" value="Новый" href="edit.xhtml"/>
+            </p:toolbarGroup>
+        </p:toolbar>
+
+        <p:dataTable lazy="true" rows="50" value="#{productTypeData}" var="e">
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="Код"/>
+                </f:facet>
+                <h:outputLink
+                        value="edit.xhtml?#{productTypeEditor.idParameterName}=#{productTypeEditor.stringFromId(e.id)}">
+                    <h:outputText value="#{e.id}"/>
+                </h:outputLink>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="Наименование"/>
+                </f:facet>
+                <h:outputLink value="edit.xhtml?#{productTypeEditor.idParameterName}=#{e.id}"><h:outputText value="#{e.name}"/></h:outputLink>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="Детки"/>
+                </f:facet>
+                <ui:repeat value="#{e.childs}" var="c">
+                    <h:outputText value="#{c}"/>
+                </ui:repeat>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="Родители"/>
+                </f:facet>
+                <ui:repeat value="#{e.parents}" var="c">
+                    <h:outputText value="#{c}"/>
+                </ui:repeat>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="Объем еденицы"/>
+                </f:facet>
+                <h:outputText value="#{e.volumeNote}"/>
+            </p:column>
+
+        </p:dataTable>
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:sec="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/security
+		http://www.springframework.org/schema/security/spring-security.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <context:component-scan base-package="security"/>
+
+    <sec:http pattern="/css/**"
+              security="none"/>
+    <sec:http pattern="/images/**"
+              security="none"/>
+    <sec:http pattern="/js/**"
+              security="none"/>
+    <sec:http pattern="/resources/**"
+              security="none"/>
+    <sec:http auto-config="true"
+              use-expressions="true">
+        <sec:csrf disabled="true"/>
+        <sec:form-login login-page="/login.xhtml"/>
+        <!-- <logout logout-url="/logout.xhtml"></logout> -->
+        <sec:intercept-url access="permitAll"
+                           pattern="/login.xhtml"/>
+        <sec:intercept-url access="permitAll"
+                           pattern="/loginfail.xhtml"/>
+        <sec:intercept-url access="hasRole('ADMIN')"
+                           pattern="/admin/**"/>
+        <sec:intercept-url access="hasRole('MANAGER')"
+                           pattern="/manager/**"/>
+        <sec:remember-me services-ref="rememberMeServices"/>
+    </sec:http>
+
+    <bean id="authenticationManager"
+          class="org.springframework.security.authentication.ProviderManager">
+        <constructor-arg>
+            <list>
+                <ref local="daoAuthenticationProvider"/>
+                <ref local="anonymousAuthenticationProvider"/>
+            </list>
+        </constructor-arg>
+    </bean>
+    <bean id="daoAuthenticationProvider"
+          class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
+        <property name="userDetailsService" ref="detailsService"/>
+    </bean>
+    <bean id="anonymousAuthenticationProvider"
+          class="org.springframework.security.authentication.AnonymousAuthenticationProvider">
+        <constructor-arg name="key" value="spr"/>
+    </bean>
+
+    <bean id="rememberMeFilter" class=
+            "org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter">
+        <constructor-arg name="rememberMeServices" ref="rememberMeServices"/>
+        <constructor-arg name="authenticationManager" ref="authenticationManager"/>
+    </bean>
+
+    <bean id="rememberMeServices" class=
+            "org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices">
+        <constructor-arg name="userDetailsService" ref="detailsService"/>
+        <constructor-arg name="key" value="spr"/>
+    </bean>
+
+    <bean id="rememberMeAuthenticationProvider" class=
+            "org.springframework.security.authentication.RememberMeAuthenticationProvider">
+        <constructor-arg name="key" value="spr"/>
+    </bean>
+
+</beans>

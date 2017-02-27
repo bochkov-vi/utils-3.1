@@ -1,0 +1,15 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:cc="http://java.sun.com/jsf/composite">
+<cc:interface>
+    <cc:attribute name="editorBean" required="true"/>
+</cc:interface>
+<cc:implementation>
+    <p:toolbar>
+        <p:toolbarGroup>
+            <p:commandButton value="Сохранить" icon="fa fa-fw fa-save" action="#{cc.attrs.editorBean.save()}" ajax="false"/>
+            <p:button value="К таблице" href="list.xhtml" icon="fa fa-fw fa-mail-reply"/>
+        </p:toolbarGroup>
+    </p:toolbar>
+</cc:implementation>
+</html>

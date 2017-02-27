@@ -1,0 +1,48 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+>
+
+    <p:panelGrid columns="2" columnClasses="labelClass">
+        <p:outputLabel for="id" value="Код:"/>
+        <p:inputText id="id" value="#{productTypeEditor.selected.id}"/>
+        <p:outputLabel for="name" value="Наименование:"/>
+        <p:inputText id="name" value="#{productTypeEditor.selected.name}"/>
+        <p:outputLabel for="childs" value="Детки:"/>
+        <p:autoComplete id="childs"
+                        value="#{productTypeEditor.selected.childs}"
+                        converter="#{productTypeEditor}"
+                        completeMethod="#{productTypeService.findByMask}"
+                        itemLabel="#{e.name}"
+                        itemValue="#{e}"
+                        var="e"
+                        multiple="true">
+        </p:autoComplete>
+        <p:outputLabel for="parents" value="Предки:"/>
+        <p:autoComplete id="parents"
+                        value="#{productTypeEditor.selected.parents}"
+                        converter="#{productTypeEditor}"
+                        completeMethod="#{productTypeService.findByMask}"
+                        itemLabel="#{e.name}"
+                        itemValue="#{e}"
+                        var="e"
+                        multiple="true">
+        </p:autoComplete>
+    </p:panelGrid>
+
+    <p:graphicImage value="/spring//file/#{1}" />
+    <p:graphicImage value="/spring//file/#{2}" />
+    <p:galleria id="gallerea" value="#{productTypeEditor.selected.files}"
+                var="file"
+                panelHeight="300"
+                panelWidth="500"
+                frameHeight="80"
+                frameWidth="120"
+                style=""
+                rendered="#{not empty productTypeEditor.selected.files}">
+        <p:graphicImage style="height: 200px;width: 500px" value="/spring//file/#{file.id}" alt="#{file.name}" title="#{file.name}"/>
+    </p:galleria>
+    <!--<p:contentFlow value="#{productTypeEditor.selected.files}" var="f">
+        <p:graphicImage  value="/spring/file/#{f.id}" styleClass="content"/>
+    </p:contentFlow>-->
+</ui:composition>
