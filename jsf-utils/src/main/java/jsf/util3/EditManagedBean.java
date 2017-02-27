@@ -77,6 +77,7 @@ public abstract class EditManagedBean<T extends IIdable<ID>, ID extends Serializ
 
     protected EditManagedBean() {
         super();
+        idParameterName = entityClass.getSimpleName();
     }
 
 
