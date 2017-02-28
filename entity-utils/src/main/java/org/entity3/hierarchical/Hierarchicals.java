@@ -5,7 +5,6 @@
  */
 package org.entity3.hierarchical;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
@@ -23,20 +22,12 @@ public class Hierarchicals {
 
     public static <ID extends Serializable, H extends IHierarchical> boolean isChildOfId(final H child, final Iterable<ID> parentIds) {
         Iterable<H> iterable = new ParentIterable<H>(child);
-        return Iterables.any(iterable, new Predicate<H>() {
-            public boolean apply(H input) {
-                return Iterables.contains(parentIds, input.getId());
-            }
-        });
+        return Iterables.any(iterable, input -> Iterables.contains(parentIds, input.getId()));
     }
 
     public static <ID extends Serializable, H extends IHierarchical<ID,H>> boolean isParentOfId(final H parent, final Iterable<ID> childIds) {
         Iterable<H> iterable = new ChildIterable<H>(parent);
-        return Iterables.any(iterable, new Predicate<H>() {
-            public boolean apply(H input) {
-                return Iterables.contains(childIds, input.getId());
-            }
-        });
+        return Iterables.any(iterable, input -> Iterables.contains(childIds, input.getId()));
     }
 
     public static <ID extends Serializable, H extends IHierarchical > boolean isChildOfId(final H child, final ID... parentIds) {
@@ -49,12 +40,7 @@ public class Hierarchicals {
 
     public static <H extends IHierarchical> boolean isChildOf(H child, final Iterable<H> parents) {
         Iterable<H> iterable = new ParentIterable<H>(child);
-        return Iterables.any(iterable, new Predicate<H>() {
-
-            public boolean apply(H t) {
-                return Iterables.contains(parents, t);
-            }
-        });
+        return Iterables.any(iterable, t -> Iterables.contains(parents, t));
     }
 
     public static <H extends IHierarchical> boolean isChildOf(H child, H... parents) {
@@ -63,12 +49,7 @@ public class Hierarchicals {
 
     public static <H extends IHierarchical> boolean isParentOf(H parent, final Iterable<H> childs) {
         Iterable<H> iterable = new ParentIterable<H>(parent);
-        return Iterables.any(iterable, new Predicate<H>() {
-
-            public boolean apply(H t) {
-                return Iterables.contains(childs, t);
-            }
-        });
+        return Iterables.any(iterable, t -> Iterables.contains(childs, t));
 
     }
 
