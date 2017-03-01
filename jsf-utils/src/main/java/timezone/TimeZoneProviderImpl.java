@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package jsf.util3;
+package timezone;
 
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 /**
  * @author viktor
  */
-@Component
+@Component("timeZoneProvider")
 @Scope("session")
 public class TimeZoneProviderImpl implements TimeZoneProvider, Serializable {
 

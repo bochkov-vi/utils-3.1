@@ -3,12 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package jsf.util3;
+package timezone;
 
 import org.joda.time.DateTimeZone;
 
 import java.util.TimeZone;
-
 
 /**
  * @author viktor
@@ -24,4 +23,5 @@ public interface TimeZoneProvider {
     String getTimeZoneId();
 
     void setTimeZoneId(String id);
+
 }

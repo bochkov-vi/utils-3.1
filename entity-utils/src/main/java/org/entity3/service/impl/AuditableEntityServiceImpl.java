@@ -32,13 +32,11 @@ public abstract class AuditableEntityServiceImpl<T extends Auditable<?, ID>, ID 
     }
 
     protected Specification<T> createLastModifiedSpecification() {
-        return new Specification<T>() {
-            public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                Expression e = root.get("lastModifiedDate");
-                Expression e2 = root.get("createdDate");
-                query.orderBy(cb.desc(e), cb.desc(e2));
-                return query.getRestriction();
-            }
+        return (root, query, cb) -> {
+            Expression e = root.get("lastModifiedDate");
+            Expression e2 = root.get("createdDate");
+            query.orderBy(cb.desc(e), cb.desc(e2));
+            return query.getRestriction();
         };
     }
 }
