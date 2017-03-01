@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package timezone;
+package jsf.util3.timezone;
 
 import com.google.common.base.Strings;
 import org.joda.time.DateTime;
@@ -22,7 +22,7 @@ import javax.faces.convert.Converter;
  */
 @Component
 @Scope("session")
-public class SessionTimeConverter extends SessionDateTimeConverter implements Converter {
+public class SessionDateTimeConverter extends DateTimeFormatterable implements Converter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
@@ -52,12 +52,31 @@ public class SessionTimeConverter extends SessionDateTimeConverter implements Co
         return result;
     }
 
+    public String toString(DateTime dateTime, String pattern) {
+        String result = "";
+        if (dateTime != null) {
+            result = dateTime.toString(createDateTimeFormatter(pattern));
+        }
+        return result;
+    }
+
     @Override
     public DateTimeFormatter createDateTimeFormatter() {
-        DateTimeFormatter formatter = DateTimeFormat.shortTime();
-        if (timeZoneProvider != null && timeZoneProvider.getTimeZone() != null) {
+        DateTimeFormatter formatter = DateTimeFormat.shortDateTime();
+        if (timeZoneProvider != null && timeZoneProvider.getDateTimeZone() != null) {
             formatter = formatter.withZone(timeZoneProvider.getDateTimeZone());
         }
         return formatter;
     }
+
+    @Override
+    public DateTimeFormatter createDateTimeFormatter(String pattern) {
+        DateTimeFormatter formatter = DateTimeFormat.forPattern(pattern);
+        if (timeZoneProvider != null && timeZoneProvider.getDateTimeZone() != null) {
+            formatter = formatter.withZone(timeZoneProvider.getDateTimeZone());
+        }
+        return formatter;
+    }
+
+
 }

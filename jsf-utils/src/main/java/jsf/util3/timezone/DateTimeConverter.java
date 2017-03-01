@@ -3,15 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package timezone;
+package jsf.util3.timezone;
 
 import com.google.common.base.Strings;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.primefaces.component.calendar.Calendar;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -20,11 +19,10 @@ import javax.faces.convert.Converter;
 /**
  * @author viktor
  */
-@Component
-@Scope("session")
-public class SessionDateTimeConverter extends DateTimeFormatterable implements Converter {
 
-    @Override
+
+public class DateTimeConverter implements Converter {
+
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         Object result = null;
         if (!Strings.isNullOrEmpty(value)) {
@@ -38,7 +36,6 @@ public class SessionDateTimeConverter extends DateTimeFormatterable implements C
         return result;
     }
 
-    @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         String result = "";
         if (value instanceof DateTime) {
@@ -52,31 +49,18 @@ public class SessionDateTimeConverter extends DateTimeFormatterable implements C
         return result;
     }
 
-    public String toString(DateTime dateTime, String pattern) {
-        String result = "";
-        if (dateTime != null) {
-            result = dateTime.toString(createDateTimeFormatter(pattern));
-        }
-        return result;
-    }
-
-    @Override
-    public DateTimeFormatter createDateTimeFormatter() {
-        DateTimeFormatter formatter = DateTimeFormat.shortDateTime();
-        if (timeZoneProvider != null && timeZoneProvider.getDateTimeZone() != null) {
-            formatter = formatter.withZone(timeZoneProvider.getDateTimeZone());
+    protected DateTimeFormatter createDateTimeFormatter(Calendar ui) {
+        DateTimeFormatter formatter = DateTimeFormat.forPattern(ui.getPattern());
+        String zone = (String) ui.getTimeZone();
+        if (!Strings.isNullOrEmpty(zone)) {
+            formatter = formatter.withZone(DateTimeZone.forID(zone));
         }
         return formatter;
     }
 
-    @Override
-    public DateTimeFormatter createDateTimeFormatter(String pattern) {
-        DateTimeFormatter formatter = DateTimeFormat.forPattern(pattern);
-        if (timeZoneProvider != null && timeZoneProvider.getDateTimeZone() != null) {
-            formatter = formatter.withZone(timeZoneProvider.getDateTimeZone());
-        }
+    protected DateTimeFormatter createDateTimeFormatter() {
+        DateTimeFormatter formatter = DateTimeFormat.shortDate();
         return formatter;
     }
-
 
 }

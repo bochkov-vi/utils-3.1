@@ -3,10 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package timezone;
+package jsf.util3.timezone;
 
 import com.google.common.base.Strings;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.primefaces.component.calendar.Calendar;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -20,7 +22,7 @@ import javax.faces.convert.Converter;
  */
 @Component
 @Scope("session")
-public class SessionDateConverter extends DateTimeFormatterable implements Converter {
+public class SessionTimeConverter extends SessionDateTimeConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
@@ -48,5 +50,14 @@ public class SessionDateConverter extends DateTimeFormatterable implements Conve
             }
         }
         return result;
+    }
+
+    @Override
+    public DateTimeFormatter createDateTimeFormatter() {
+        DateTimeFormatter formatter = DateTimeFormat.shortTime();
+        if (timeZoneProvider != null && timeZoneProvider.getTimeZone() != null) {
+            formatter = formatter.withZone(timeZoneProvider.getDateTimeZone());
+        }
+        return formatter;
     }
 }
