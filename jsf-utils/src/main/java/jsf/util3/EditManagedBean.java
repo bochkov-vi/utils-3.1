@@ -9,6 +9,7 @@ import com.google.common.base.Strings;
 import org.entity3.IIdable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.orm.jpa.JpaSystemException;
 
 import javax.faces.context.FacesContext;
 import java.io.Serializable;
@@ -69,10 +70,12 @@ public abstract class EditManagedBean<T extends IIdable<ID>, ID extends Serializ
 
     protected EditManagedBean(Class<T> entityClass, Class<ID> idClass) {
         super(entityClass, idClass);
+        idParameterName = entityClass.getSimpleName();
     }
 
     protected EditManagedBean(Class<T> entityClass) {
         super(entityClass);
+        idParameterName = entityClass.getSimpleName();
     }
 
     protected EditManagedBean() {
@@ -116,7 +119,7 @@ public abstract class EditManagedBean<T extends IIdable<ID>, ID extends Serializ
             addInfoMessage(MessageFormat.format("{0}{1}", msg.getProperty(INFO_ON_SAVE), selected.getId()));
         } catch (Exception e) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, ERROR_ON_SAVE, e);
-            addErrorMessage(msg.getProperty(ERROR_ON_SAVE), e);
+            addErrorMessage(((JpaSystemException) e).getRootCause().getMessage());
             return null;
         }
         return saveOutcome + "?faces-redirect=true&" + idParameterName + "=" + stringFromId(selected.getId());
