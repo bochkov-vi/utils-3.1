@@ -17,15 +17,15 @@ import java.util.List;
  * @author bochkov
  */
 public interface HierarchicalRepository<T extends IHierarchical<ID, T>, ID extends Serializable> extends CustomRepository<T, ID> {
-    @Query("select x from #{#entityName} x WHERE x.childList IS EMPTY ORDER BY x.name")
+    @Query("select x from #{#entityName} x WHERE x.childs IS EMPTY ORDER BY x.name")
     List<T> findByChildListIsEmpty();
 
-    @Query("select x from #{#entityName} x WHERE x.parentList IS EMPTY ORDER BY x.name")
+    @Query("select x from #{#entityName} x WHERE x.parents IS EMPTY ORDER BY x.name")
     List<T> findByParentListIsEmpty();
 
-    @Query("select x from #{#entityName} x WHERE x.childList IS NOT EMPTY ORDER BY x.name")
+    @Query("select x from #{#entityName} x WHERE x.childs IS NOT EMPTY ORDER BY x.name")
     List<T> findByChildListIsNotEmpty();
 
-    @Query("select x from #{#entityName} x WHERE x.parentList IS NOT EMPTY ORDER BY x.name")
+    @Query("select x from #{#entityName} x WHERE x.parents IS NOT EMPTY ORDER BY x.name")
     List<T> findByParentListIsNotEmpty();
 }
