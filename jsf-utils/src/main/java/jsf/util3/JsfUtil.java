@@ -13,7 +13,7 @@ public abstract class JsfUtil {
         addErrorMessage(msg, (String) null);
     }
 
-    public static void addErrorMessage(String msg, Exception e) {
+    public static void addErrorMessage(String msg, Throwable e) {
         addErrorMessage(msg, e.getLocalizedMessage());
     }
 
