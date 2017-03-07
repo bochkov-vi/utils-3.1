@@ -9,7 +9,7 @@ import com.google.common.base.Strings;
 import org.entity3.IIdable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.core.NestedRuntimeException;
 
 import javax.faces.context.FacesContext;
 import java.io.Serializable;
@@ -105,7 +105,8 @@ public abstract class EditManagedBean<T extends IIdable<ID>, ID extends Serializ
                 getRepository().delete(selected);
                 selected = null;
             } catch (Exception e) {
-                JsfUtil.addErrorMessage(msg.getProperty(ERROR_ON_DELETE), ((JpaSystemException) e).getRootCause());
+                JsfUtil.addErrorMessage(msg.getProperty(ERROR_ON_DELETE), ((NestedRuntimeException) e).getRootCause());
+                return null;
             }
         } else {
             addErrorMessage(msg.getProperty(ERROR_ON_EMPTY));
@@ -119,7 +120,7 @@ public abstract class EditManagedBean<T extends IIdable<ID>, ID extends Serializ
             addInfoMessage(MessageFormat.format("{0}{1}", msg.getProperty(INFO_ON_SAVE), selected.getId()));
         } catch (Exception e) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, ERROR_ON_SAVE, e);
-            addErrorMessage(msg.getProperty(ERROR_ON_SAVE),((JpaSystemException) e).getRootCause());
+            addErrorMessage(msg.getProperty(ERROR_ON_SAVE),((NestedRuntimeException) e).getRootCause());
             return null;
         }
         return saveOutcome + "?faces-redirect=true&" + idParameterName + "=" + stringFromId(selected.getId());
