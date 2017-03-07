@@ -32,6 +32,17 @@
                 </configuration>
             </plugin>
             <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <artifactId>eclipselink-staticweave-maven-plugin</artifactId>
                 <groupId>au.com.alderaan</groupId>
                 <version>1.0.4</version>

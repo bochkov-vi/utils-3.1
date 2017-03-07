@@ -9,6 +9,7 @@
         <artifactId>utils</artifactId>
         <version>3.0</version>
     </parent>
+    <packaging>jar</packaging>
     <dependencies>
         <dependency>
             <groupId>org.primefaces</groupId>
@@ -41,4 +42,19 @@
         </dependency>
 
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
