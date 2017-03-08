@@ -141,7 +141,7 @@ public abstract class EditManagedBean<T extends IIdable<ID>, ID extends Serializ
     public T entityFromRequest() {
         T result = null;
         FacesContext fc = FacesContext.getCurrentInstance();
-        if (fc != null && selected == null) {
+        if (fc != null) {
             String idStr = fc.getExternalContext().getRequestParameterMap().get(idParameterName);
             if (!Strings.isNullOrEmpty(idStr)) {
                 result = this.convert(idStr);
