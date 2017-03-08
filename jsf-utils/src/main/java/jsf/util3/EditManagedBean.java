@@ -120,20 +120,14 @@ public abstract class EditManagedBean<T extends IIdable<ID>, ID extends Serializ
             addInfoMessage(MessageFormat.format("{0}{1}", msg.getProperty(INFO_ON_SAVE), selected.getId()));
         } catch (Exception e) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, ERROR_ON_SAVE, e);
-            addErrorMessage(msg.getProperty(ERROR_ON_SAVE),((NestedRuntimeException) e).getRootCause());
+            addErrorMessage(msg.getProperty(ERROR_ON_SAVE), ((NestedRuntimeException) e).getRootCause());
             return null;
         }
         return saveOutcome + "?faces-redirect=true&" + idParameterName + "=" + stringFromId(selected.getId());
     }
 
     public T getSelected() {
-        FacesContext fc = FacesContext.getCurrentInstance();
-        if (fc != null && selected == null) {
-            String idStr = fc.getExternalContext().getRequestParameterMap().get(idParameterName);
-            if (!Strings.isNullOrEmpty(idStr)) {
-                selected = this.convert(idStr);
-            }
-        }
+        selected = entityFromRequest();
         if (selected == null) {
             return selected = createNewInstance();
         }
@@ -142,6 +136,18 @@ public abstract class EditManagedBean<T extends IIdable<ID>, ID extends Serializ
 
     public void setSelected(T selected) {
         this.selected = selected;
+    }
+
+    public T entityFromRequest() {
+        T result = null;
+        FacesContext fc = FacesContext.getCurrentInstance();
+        if (fc != null && selected == null) {
+            String idStr = fc.getExternalContext().getRequestParameterMap().get(idParameterName);
+            if (!Strings.isNullOrEmpty(idStr)) {
+                result = this.convert(idStr);
+            }
+        }
+        return result;
     }
 
     public T createNewInstance() {
