@@ -127,7 +127,10 @@ public abstract class EditManagedBean<T extends IIdable<ID>, ID extends Serializ
     }
 
     public T getSelected() {
-        selected = entityFromRequest();
+
+        if(selected==null){
+            selected = entityFromRequest();
+        }
         if (selected == null) {
             return selected = createNewInstance();
         }
