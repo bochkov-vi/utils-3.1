@@ -55,7 +55,7 @@ public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID, 
         return new Specification<T>() {
 
             public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                Expression e = root.get("childList");
+                Expression e = root.get("childs");
                 return cb.isEmpty(e);
             }
         };
@@ -65,7 +65,7 @@ public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID, 
         return new Specification<T>() {
 
             public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                Expression e = root.get("parentList");
+                Expression e = root.get("parents");
                 return cb.isEmpty(e);
             }
         };
