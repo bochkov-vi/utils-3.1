@@ -23,8 +23,8 @@ import java.util.List;
  */
 public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID, T> & Auditable<?, ID>, ID extends Serializable> extends AuditableEntityServiceImpl<T, ID> implements HierarchicalEntityService<T, ID> {
 
-    public HierarchicalEntityServiceImpl(Class<T> entityClass, String... maskeProperty) {
-        super(entityClass, maskeProperty);
+    public HierarchicalEntityServiceImpl(Class<T> entityClass, String... maskedProperty) {
+        super(entityClass, maskedProperty);
     }
 
     protected HierarchicalEntityServiceImpl() {
@@ -33,12 +33,12 @@ public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID, 
 
 
     public List<T> findByMaskAndEmtyChilds(String mask) {
-        return findAll(Specifications.where(createFindByMaskSpecification(mask, Lists.<Path>newArrayList())).and(createEmptyChildsSpecification()));
+        return findAll(Specifications.where(createFindByMaskSpecification(mask, Lists.newArrayList())).and(createEmptyChildsSpecification()));
     }
 
 
-    public List<T> findByMaskAndEmtyParents(String mask) {
-        return findAll(Specifications.where(createFindByMaskSpecification(mask, Lists.<Path>newArrayList())).and(createEmptyParentsSpecification()));
+    public List<T> findByMaskAndEmptyParents(String mask) {
+        return findAll(Specifications.where(createFindByMaskSpecification(mask, Lists.newArrayList())).and(createEmptyParentsSpecification()));
     }
 
 
@@ -52,22 +52,16 @@ public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID, 
     }
 
     protected Specification<T> createEmptyChildsSpecification() {
-        return new Specification<T>() {
-
-            public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                Expression e = root.get("childs");
-                return cb.isEmpty(e);
-            }
+        return (root, query, cb) -> {
+            Expression e = root.get("childs");
+            return cb.isEmpty(e);
         };
     }
 
     protected Specification<T> createEmptyParentsSpecification() {
-        return new Specification<T>() {
-
-            public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                Expression e = root.get("parents");
-                return cb.isEmpty(e);
-            }
+        return (root, query, cb) -> {
+            Expression e = root.get("parents");
+            return cb.isEmpty(e);
         };
     }
 
@@ -86,7 +80,7 @@ public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID, 
             T old = getRepository().findOne(id);
             List<T> oldChilds = MoreObjects.firstNonNull(old.getChilds(), ImmutableList.<T>of());
             for (T ch : Collections2.filter(oldChilds, Predicates.not(Predicates.in(currentChilds)))) {
-                ch.setParents(ImmutableList.copyOf(Sets.difference(ImmutableSet.of((T) s), ImmutableSet.copyOf(MoreObjects.firstNonNull(ch.getParents(), ImmutableList.<T>of())))));
+                ch.setParents(ImmutableList.copyOf(Sets.difference(ImmutableSet.of((T) s), ImmutableSet.copyOf(MoreObjects.firstNonNull(ch.getParents(), ImmutableList.of())))));
                 getRepository().save(ch);
             }
         }
