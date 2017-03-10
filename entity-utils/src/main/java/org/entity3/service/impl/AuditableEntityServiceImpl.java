@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @param <T>
@@ -17,14 +18,25 @@ import java.io.Serializable;
  */
 public abstract class AuditableEntityServiceImpl<T extends Auditable<?, ID>, ID extends Serializable> extends EntityServiceImpl<T, ID> implements AuditableEntityService<T, ID> {
 
-
     protected AuditableEntityServiceImpl() {
         super();
+    }
+
+    public AuditableEntityServiceImpl(Class<T> entityClass) {
+        super(entityClass);
+    }
+
+    public AuditableEntityServiceImpl(String... maskedProperty) {
+        super(maskedProperty);
     }
 
 
     public AuditableEntityServiceImpl(Class<T> entityClass, String... maskedProperty) {
         super(entityClass, maskedProperty);
+    }
+
+    public AuditableEntityServiceImpl(Class<T> entityClass, List<String> maskedPopertyList) {
+        super(entityClass, maskedPopertyList);
     }
 
     public T findLastModified() {
