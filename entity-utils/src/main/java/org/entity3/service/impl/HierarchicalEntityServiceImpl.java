@@ -27,20 +27,8 @@ public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID, 
         super(entityClass, maskeProperty);
     }
 
-    public HierarchicalEntityServiceImpl(Class<T> entityClass, List<String> maskedPopertyList) {
-        super(entityClass, maskedPopertyList);
-    }
-
     protected HierarchicalEntityServiceImpl() {
         super();
-    }
-
-    public HierarchicalEntityServiceImpl(Class<T> entityClass) {
-        super(entityClass);
-    }
-
-    public HierarchicalEntityServiceImpl(String... maskedProperty) {
-        super(maskedProperty);
     }
 
 
@@ -74,58 +62,36 @@ public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID, 
     }
 
     protected Specification<T> createEmptyParentsSpecification() {
-        return (root, query, cb) -> {
-            Expression e = root.get("parents");
-            return cb.isEmpty(e);
+        return new Specification<T>() {
+
+            public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Expression e = root.get("parents");
+                return cb.isEmpty(e);
+            }
         };
     }
 
 
     public <S extends T> S save(S s) {
-        return super.save(prepareSave(s));
-    }
-
-    public <S extends T> S prepareSave(S s) {
-        //Устанавливаем всем деткам текущего предка если не установлен
         List<T> currentChilds = MoreObjects.firstNonNull(s.getChilds(), ImmutableList.<T>of());
-        for (T child : currentChilds) {
-            List<T> parentsOfChilds = MoreObjects.firstNonNull(child.getParents(), ImmutableList.<T>of());
-            if (!parentsOfChilds.contains(s)) {
-                child.setParents((ImmutableList.copyOf(ImmutableSet.copyOf(Iterables.concat(ImmutableList.of((T) s), parentsOfChilds)))));
-                getRepository().save(child);
-            }
-        }
-        //Устанавливаем всем предекам текущую детку
-        List<T> currentParents = MoreObjects.firstNonNull(s.getParents(), ImmutableList.<T>of());
-        for (T parent : currentParents) {
-            List<T> childsOfParent = MoreObjects.firstNonNull(parent.getParents(), ImmutableList.<T>of());
-            if (!childsOfParent.contains(s)) {
-                parent.setChilds((ImmutableList.copyOf(ImmutableSet.copyOf(Iterables.concat(ImmutableList.of((T) s), childsOfParent)))));
-                getRepository().save(parent);
-            }
-        }
 
+        for (T child : currentChilds) {
+            List<T> parents = MoreObjects.firstNonNull(child.getParents(), ImmutableList.<T>of());
+            if (!parents.contains(s)) {
+                child.setParents((ImmutableList.copyOf(ImmutableSet.copyOf(Iterables.concat(ImmutableList.of((T) s), parents)))));
+            }
+        }
         if (!s.isNew()) {
             ID id = s.getId();
             T old = getRepository().findOne(id);
-            //Удалеяем ссылку на текущий объект у удаленных деток
-            {List<T> oldChilds = MoreObjects.firstNonNull(old.getChilds(), ImmutableList.<T>of());
-            for (T oldChildToRemove : Collections2.filter(oldChilds, Predicates.not(Predicates.in(currentChilds)))) {
-                oldChildToRemove.setParents(ImmutableList.copyOf(Sets.difference(ImmutableSet.of((T) s), ImmutableSet.copyOf(MoreObjects.firstNonNull(oldChildToRemove.getParents(), ImmutableList.<T>of())))));
-                getRepository().save(oldChildToRemove);
-            }}
-            //Удалеяем ссылку на текущий объект у удаленных предков
-            List<T> oldParents = MoreObjects.firstNonNull(old.getParents(), ImmutableList.<T>of());
-            for (T oldParentToRemove : Collections2.filter(oldParents, Predicates.not(Predicates.in(currentParents)))) {
-                oldParentToRemove.setChilds(ImmutableList.copyOf(Sets.difference(ImmutableSet.of((T) s), ImmutableSet.copyOf(MoreObjects.firstNonNull(oldParentToRemove.getChilds(), ImmutableList.<T>of())))));
-                getRepository().save(oldParentToRemove);
+            List<T> oldChilds = MoreObjects.firstNonNull(old.getChilds(), ImmutableList.<T>of());
+            for (T ch : Collections2.filter(oldChilds, Predicates.not(Predicates.in(currentChilds)))) {
+                ch.setParents(ImmutableList.copyOf(Sets.difference(ImmutableSet.of((T) s), ImmutableSet.copyOf(MoreObjects.firstNonNull(ch.getParents(), ImmutableList.<T>of())))));
+                getRepository().save(ch);
             }
         }
-        return s;
+        return super.save(s);
     }
 
-    @Override
-    public <S extends T> S saveAndFlush(S s) {
-        return super.saveAndFlush(prepareSave(s));
-    }
+
 }
