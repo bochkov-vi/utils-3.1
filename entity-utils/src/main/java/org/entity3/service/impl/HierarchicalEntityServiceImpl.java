@@ -13,7 +13,7 @@ import org.springframework.data.domain.Auditable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.domain.Specifications;
 
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.Expression;
 import java.io.Serializable;
 import java.util.List;
 
@@ -27,26 +27,38 @@ public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID, 
         super(entityClass, maskedProperty);
     }
 
+    public HierarchicalEntityServiceImpl(Class<T> entityClass, List<String> maskedPopertyList) {
+        super(entityClass, maskedPopertyList);
+    }
+
     protected HierarchicalEntityServiceImpl() {
         super();
     }
 
+    public HierarchicalEntityServiceImpl(Class<T> entityClass) {
+        super(entityClass);
+    }
 
-    public List<T> findByMaskAndEmtyChilds(String mask) {
+    public HierarchicalEntityServiceImpl(String... maskedProperty) {
+        super(maskedProperty);
+    }
+
+    @Override
+    public List<T> findByMaskAndEmptyChilds(String mask) {
         return findAll(Specifications.where(createFindByMaskSpecification(mask, Lists.newArrayList())).and(createEmptyChildsSpecification()));
     }
 
-
+    @Override
     public List<T> findByMaskAndEmptyParents(String mask) {
         return findAll(Specifications.where(createFindByMaskSpecification(mask, Lists.newArrayList())).and(createEmptyParentsSpecification()));
     }
 
-
+    @Override
     public List<T> findByEmptyChilds() {
         return findAll(createEmptyChildsSpecification());
     }
 
-
+    @Override
     public List<T> findByEmptyParents() {
         return findAll(createEmptyParentsSpecification());
     }

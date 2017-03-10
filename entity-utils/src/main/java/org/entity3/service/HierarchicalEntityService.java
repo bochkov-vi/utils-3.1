@@ -19,7 +19,7 @@ public interface HierarchicalEntityService<T extends IHierarchical<ID,T> & Audit
 
     public List<T> findByEmptyChilds();
 
-    public List<T> findByMaskAndEmtyChilds(String mask);
+    public List<T> findByMaskAndEmptyChilds(String mask);
 
-    public List<T> findByMaskAndEmtyParents(String mask);
+    public List<T> findByMaskAndEmptyParents(String mask);
 }
