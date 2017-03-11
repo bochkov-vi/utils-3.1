@@ -270,4 +270,10 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
     public List findAll(MultiSelection selection, Specification spec, Sort sort) {
         return findAll(selection, spec, sort, null);
     }
+
+    @Override
+    public T refresh(T entity) {
+        em.refresh(entity);
+        return entity;
+    }
 }

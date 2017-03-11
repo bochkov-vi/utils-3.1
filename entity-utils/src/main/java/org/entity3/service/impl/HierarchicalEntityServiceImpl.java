@@ -12,9 +12,11 @@ import org.entity3.service.HierarchicalEntityService;
 import org.springframework.data.domain.Auditable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.domain.Specifications;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.Expression;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -77,26 +79,60 @@ public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID, 
         };
     }
 
-
+    @Transactional
     public <S extends T> S save(S s) {
-        List<T> currentChilds = MoreObjects.firstNonNull(s.getChilds(), ImmutableList.<T>of());
+        return super.save(prepareSave(s));
+    }
 
-        for (T child : currentChilds) {
-            List<T> parents = MoreObjects.firstNonNull(child.getParents(), ImmutableList.<T>of());
-            if (!parents.contains(s)) {
-                child.setParents((ImmutableList.copyOf(ImmutableSet.copyOf(Iterables.concat(ImmutableList.of((T) s), parents)))));
-            }
-        }
+    public <S extends T> S prepareSave(S s) {
+        List<T> currentChilds = MoreObjects.firstNonNull(s.getChilds(), ImmutableList.<T>of());
+        List<T> currentParents = MoreObjects.firstNonNull(s.getParents(), ImmutableList.<T>of());
+
         if (!s.isNew()) {
-            ID id = s.getId();
-            T old = getRepository().findOne(id);
-            List<T> oldChilds = MoreObjects.firstNonNull(old.getChilds(), ImmutableList.<T>of());
-            for (T ch : Collections2.filter(oldChilds, Predicates.not(Predicates.in(currentChilds)))) {
-                ch.setParents(ImmutableList.copyOf(Sets.difference(ImmutableSet.of((T) s), ImmutableSet.copyOf(MoreObjects.firstNonNull(ch.getParents(), ImmutableList.of())))));
-                getRepository().save(ch);
+            Collection<T> childsRemoveFrom = ImmutableList.of();
+            Collection<T> parentsRemoveFrom = ImmutableList.of();
+            T old = getRepository().findOne(s.getId());
+            childsRemoveFrom = Collections2.filter(old.getChilds(), Predicates.not(Predicates.in(currentChilds)));
+            parentsRemoveFrom = Collections2.filter(old.getParents(), Predicates.not(Predicates.in(currentParents)));
+            for (T e : childsRemoveFrom) {
+                e.getParents().remove(e);
+                getRepository().saveAndFlush(e);
+            }
+            for (T e : parentsRemoveFrom) {
+                e.getChilds().remove(e);
+                getRepository().saveAndFlush(e);
+            }
+        } else {
+            s = getRepository().save(s);
+        }
+
+        //Устанавливаем всем деткам текущего предка если не установлен
+        for (T child : currentChilds) {
+            List<T> parentsOfChilds = MoreObjects.firstNonNull(child.getParents(), ImmutableList.<T>of());
+            if (!parentsOfChilds.contains(s)) {
+                child.setParents((ImmutableList.copyOf(ImmutableSet.copyOf(Iterables.concat(ImmutableList.of((T) s), parentsOfChilds)))));
+                getRepository().save(child);
             }
         }
-        return super.save(s);
+
+        //Устанавливаем всем предекам текущую детку
+        for (T parent : currentParents) {
+            List<T> childsOfParent = MoreObjects.firstNonNull(parent.getChilds(), ImmutableList.<T>of());
+            if (!childsOfParent.contains(s)) {
+                parent.setChilds((ImmutableList.copyOf(ImmutableSet.copyOf(Iterables.concat(ImmutableList.of((T) s), childsOfParent)))));
+                getRepository().save(parent);
+            }
+        }
+
+        s.setParents(currentParents);
+        s.setChilds(currentChilds);
+        return s;
+    }
+
+    @Transactional
+    @Override
+    public <S extends T> S saveAndFlush(S s) {
+        return super.saveAndFlush(prepareSave(s));
     }
 
 

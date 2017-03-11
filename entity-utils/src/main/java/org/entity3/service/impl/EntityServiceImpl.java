@@ -260,5 +260,8 @@ public abstract class EntityServiceImpl<T, ID extends Serializable> extends UnTr
         return super.findPropertyByMask(propertyPath, mask, maskedProperties);
     }
 
-
+    @Override
+    public T refresh(T entity) {
+        return getRepository().refresh(entity);
+    }
 }

@@ -63,11 +63,6 @@
                         <artifactId>eclipselink</artifactId>
                         <version>${eclipselink.version}</version>
                     </dependency>
-                    <dependency>
-                        <groupId>com.bochkov</groupId>
-                        <artifactId>entity-utils</artifactId>
-                        <version>3.0</version>
-                    </dependency>
                 </dependencies>
             </plugin>
             <plugin>
