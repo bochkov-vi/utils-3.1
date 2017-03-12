@@ -29,12 +29,12 @@ import static org.springframework.data.jpa.repository.query.QueryUtils.toOrders;
 @NoRepositoryBean
 public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID> implements CustomRepository<T, ID> {
 
-    protected final JpaEntityInformation<T, ?> entityInformation;
+    protected final JpaEntityInformation<T, ID> entityInformation;
     protected final PropertySelection<ID> idSelection;
     protected final EntityManager em;
 
 
-    public CustomRepositoryImpl(JpaEntityInformation<T, ?> entityInformation, EntityManager entityManager) {
+    public CustomRepositoryImpl(JpaEntityInformation<T, ID> entityInformation, EntityManager entityManager) {
         super(entityInformation, entityManager);
         this.em = entityManager;
         this.entityInformation = entityInformation;
@@ -273,7 +273,12 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
 
     @Override
     public T refresh(T entity) {
-        em.refresh(entity);
-        return entity;
+        if (entity != null) {
+            ID id = entityInformation.getId(entity);
+            entity = findOne(id);
+            em.refresh(entity);
+            return entity;
+        }
+        return null;
     }
 }
