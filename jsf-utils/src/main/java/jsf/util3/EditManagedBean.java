@@ -10,6 +10,7 @@ import org.entity3.IIdable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.NestedRuntimeException;
+import org.springframework.data.domain.Persistable;
 
 import javax.faces.context.FacesContext;
 import java.io.Serializable;
@@ -25,7 +26,7 @@ import static jsf.util3.JsfUtil.addInfoMessage;
  * @param <T>
  * @author viktor
  */
-public abstract class EditManagedBean<T extends IIdable<ID>, ID extends Serializable> extends ManagedConverter<T, ID> {
+public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, ID extends Serializable> extends ManagedConverter<T, ID> {
 
     public static final String ERROR_ON_SAVE = "errorOnSave";
 
@@ -115,6 +116,7 @@ public abstract class EditManagedBean<T extends IIdable<ID>, ID extends Serializ
     }
 
     public String save() {
+        boolean isNew = selected.isNew();
         try {
             selected = getRepository().saveAndFlush(selected);
             addInfoMessage(MessageFormat.format("{0}{1}", msg.getProperty(INFO_ON_SAVE), selected.getId()));
@@ -123,12 +125,12 @@ public abstract class EditManagedBean<T extends IIdable<ID>, ID extends Serializ
             addErrorMessage(msg.getProperty(ERROR_ON_SAVE), ((NestedRuntimeException) e).getRootCause());
             return null;
         }
-        return saveOutcome + "?faces-redirect=true&" + idParameterName + "=" + stringFromId(selected.getId());
+        return (isNew ? createOutcome : saveOutcome) + "?faces-redirect=true&" + idParameterName + "=" + stringFromId(selected.getId());
     }
 
     public T getSelected() {
 
-        if(selected==null){
+        if (selected == null) {
             selected = entityFromRequest();
         }
         if (selected == null) {
@@ -141,16 +143,20 @@ public abstract class EditManagedBean<T extends IIdable<ID>, ID extends Serializ
         this.selected = selected;
     }
 
-    public T entityFromRequest() {
+    public T entityFromRequest(String parameterName) {
         T result = null;
         FacesContext fc = FacesContext.getCurrentInstance();
         if (fc != null) {
-            String idStr = fc.getExternalContext().getRequestParameterMap().get(idParameterName);
+            String idStr = fc.getExternalContext().getRequestParameterMap().get(parameterName);
             if (!Strings.isNullOrEmpty(idStr)) {
                 result = this.convert(idStr);
             }
         }
         return result;
+    }
+
+    public T entityFromRequest() {
+        return entityFromRequest(idParameterName);
     }
 
     public T createNewInstance() {
