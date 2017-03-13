@@ -29,4 +29,5 @@ public interface EntityService<T, ID extends Serializable>  extends CustomReposi
     public <P> List<P> findPropertyByMask(String propertyPath, String mask, String... maskedProperties);
 
     public <P> List<P> findPropertyByMask(String propertyPath, String mask, Specification additionSpecification, String... maskedProperties);
+
 }

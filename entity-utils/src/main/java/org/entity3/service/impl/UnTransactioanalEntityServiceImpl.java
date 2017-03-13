@@ -171,7 +171,14 @@ public abstract class UnTransactioanalEntityServiceImpl<T, ID extends Serializab
     }
 
     protected <P> PropertySelection<P> createPropertySelection(final String propertyPath, final Collection<Path> pathCashe) {
-        return (root, query, cb) -> createPath(root, propertyPath, pathCashe);
+        return createPropertySelection(propertyPath, true, pathCashe);
+    }
+
+    protected <P> PropertySelection<P> createPropertySelection(final String propertyPath, boolean distinct, final Collection<Path> pathCashe) {
+        return (root, query, cb) -> {
+            query.distinct(distinct);
+            return createPath(root, propertyPath, pathCashe);
+        };
     }
 
     protected Specification<T> createFindByMaskSpecification(final String mask, Iterable<String> maskedPoperties, Collection<Path> pathCashe) {
