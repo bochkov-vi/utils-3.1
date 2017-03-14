@@ -5,6 +5,7 @@
  */
 package jsf.util3;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import org.entity3.IIdable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,9 +121,13 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
         try {
             selected = getRepository().saveAndFlush(selected);
             addInfoMessage(MessageFormat.format("{0}{1}", msg.getProperty(INFO_ON_SAVE), selected.getId()));
-        } catch (Exception e) {
+        } catch (NestedRuntimeException e) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, ERROR_ON_SAVE, e);
-            addErrorMessage(msg.getProperty(ERROR_ON_SAVE), ((NestedRuntimeException) e).getRootCause());
+            addErrorMessage(msg.getProperty(ERROR_ON_SAVE), e.getRootCause());
+            return null;
+        }catch (Exception e){
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, ERROR_ON_SAVE, e);
+            addErrorMessage(msg.getProperty(ERROR_ON_SAVE), MoreObjects.firstNonNull(e.getCause(),e));
             return null;
         }
         return (isNew ? createOutcome : saveOutcome) + "?faces-redirect=true&" + idParameterName + "=" + stringFromId(selected.getId());
