@@ -11,7 +11,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
-import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.util.Assert;
 
 import javax.persistence.EntityManager;
@@ -26,7 +25,6 @@ import static org.springframework.data.jpa.repository.query.QueryUtils.toOrders;
 /**
  * @author bochkov
  */
-@NoRepositoryBean
 public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID> implements CustomRepository<T, ID> {
 
     protected final JpaEntityInformation<T, ID> entityInformation;
