@@ -14,7 +14,7 @@ public abstract class JsfUtil {
     }
 
     public static void addErrorMessage(String msg, Throwable e) {
-        addErrorMessage(msg, e.getLocalizedMessage());
+        addErrorMessage(msg, e!=null? e.getLocalizedMessage():"-");
     }
 
     public static void addErrorMessage(String msg, String details) {

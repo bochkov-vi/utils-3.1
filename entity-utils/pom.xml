@@ -157,6 +157,16 @@
             <artifactId>eclipselink</artifactId>
             <version>${eclipselink.version}</version>
         </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>20030211.134440</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>20040616</version>
+        </dependency>
 
     </dependencies>
 </project>
