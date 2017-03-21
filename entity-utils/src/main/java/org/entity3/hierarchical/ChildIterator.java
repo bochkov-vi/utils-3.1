@@ -5,20 +5,15 @@
  */
 package org.entity3.hierarchical;
 
-import org.entity3.IHierarchical;
+import org.entity3.IParent;
 
 /**
  * @param <T>
  * @author bochkov
  */
-public class ChildIterator<T extends IHierarchical> extends RecursiveIterator<T> {
+public class ChildIterator<T extends IParent> extends RecursiveIterator<T> {
 
-    public ChildIterator(boolean includeOriginal, Iterable<T> iterable) {
-        super(new ChildIteratorExtractor<T>(), includeOriginal, iterable);
+    public ChildIterator(boolean includeOriginal, T entity) {
+        super(new ChildIteratorExtractor<T>(), includeOriginal, entity);
     }
-
-    public ChildIterator(boolean includeOriginal, T... iterable) {
-        super(new ChildIteratorExtractor<T>(), includeOriginal, iterable);
-    }
-
 }

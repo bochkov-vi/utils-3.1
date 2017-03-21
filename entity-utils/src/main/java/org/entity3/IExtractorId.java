@@ -20,8 +20,6 @@ import java.util.Collection;
  * @author bochkov
  */
 public class IExtractorId<T extends Persistable<ID>, ID extends Serializable> implements Function<T, ID> {
-
-
     public ID apply(T f) {
         return f.getId();
     }

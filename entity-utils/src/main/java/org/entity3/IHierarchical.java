@@ -5,63 +5,13 @@
  */
 package org.entity3;
 
-import com.google.common.collect.Iterables;
-import org.entity3.hierarchical.Hierarchicals;
-
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * @param <T>
  * @author bochkov
  */
-public interface IHierarchical<ID extends Serializable, T extends IHierarchical> extends IIdable<ID>{
-
-    List<T> getChilds();
-
-    List<T> getParents();
-
-    default boolean isCanHaveChilds() {
-        return true;
-    }
-
-    default boolean isCanHaveParents() {
-        return true;
-    }
-
-    default List<T> getAllChilds() {
-        return Hierarchicals.getAllChilds((T) this);
-    }
-
-    default List<T> getAllChildsAndThis() {
-        return Hierarchicals.getAllChilds(true, (T) this);
-    }
-
-    default List<T> getAllParentsAndThis() {
-        return Hierarchicals.getAllParents(true, (T) this);
-    }
-
-    default List<T> getAllParents() {
-        return Hierarchicals.getAllParents((T) this);
-    }
-
-    default boolean isChildOf(Iterable<T> parents) {
-        return Hierarchicals.isChildOf((T) this, parents);
-    }
-
-    default boolean isChildOf(T... parents) {
-        return Hierarchicals.isChildOf((T) this, parents);
-    }
-
-
-    default boolean isParentOf(Iterable<T> childs) {
-        return Hierarchicals.isParentOf((T) this, childs);
-    }
-
-    default boolean isParentOf(T... childs) {
-        return Hierarchicals.isParentOf((T) this, childs);
-    }
-
+public interface IHierarchical<ID extends Serializable, T extends IHierarchical<ID, T>> extends IParent<T, ID>, IChild<T, ID> {
     default boolean isRealativeOf(Iterable<T> childs) {
         return isParentOf(childs) || isChildOf(childs);
     }
@@ -71,40 +21,16 @@ public interface IHierarchical<ID extends Serializable, T extends IHierarchical>
     }
 
     //==========================
-    default boolean isChildOfId(Iterable<ID> parentIds) {
-        return Hierarchicals.isChildOfId(this, parentIds);
-    }
 
-    default boolean isChildOfId(ID... parentIds) {
-        return Hierarchicals.isChildOfId(this, parentIds);
-    }
 
-    default boolean isParentOfId(Iterable<ID> childIds) {
-        return Hierarchicals.isParentOfId(this, childIds);
-    }
 
-    default boolean isParentOfId(ID... childIds) {
-        return Hierarchicals.isParentOfId(this, childIds);
-    }
-
-    default boolean isRealativeOfId(Iterable<ID> childs) {
+   /* default boolean isRealativeOfId(Iterable<ID> childs) {
         return isParentOfId(childs) || isChildOfId(childs);
     }
 
     default boolean isRealativeOfId(ID... childs) {
         return isParentOfId(childs) || isChildOfId(childs);
-    }
+    }*/
 
-    default T getFirstParent() {
-        return Iterables.getFirst(getParents(), (T) this);
-    }
-
-    default void setChilds(List<T> parents) {
-        throw new UnsupportedOperationException(getClass().getName() + " method setChilds not supported");
-    }
-
-    default void setParents(List<T> childs) {
-        throw new UnsupportedOperationException(getClass().getName() + " method setParents not supported");
-    }
 
 }

@@ -5,35 +5,22 @@
  */
 package org.entity3.hierarchical;
 
-import org.entity3.IHierarchical;
-import com.google.common.collect.Lists;
-
 /**
  * @param <T>
  * @author bochkov
  */
-public abstract class RecursiveIterable<T extends IHierarchical> implements Iterable<T> {
+public abstract class RecursiveIterable<T> implements Iterable<T> {
 
-    Iterable<T> e;
+    T e;
     boolean includeOriginal;
 
-    public RecursiveIterable(Iterable<T> e) {
+    public RecursiveIterable(T e) {
         this.e = e;
         includeOriginal = false;
     }
 
-    public RecursiveIterable(boolean includeOriginal, Iterable<T> e) {
+    public RecursiveIterable(boolean includeOriginal, T e) {
         this.e = e;
-        this.includeOriginal = includeOriginal;
-    }
-
-    public RecursiveIterable(T... e) {
-        this.e = Lists.newArrayList(e);
-        this.includeOriginal = false;
-    }
-
-    public RecursiveIterable(boolean includeOriginal, T... e) {
-        this.e = Lists.newArrayList(e);
         this.includeOriginal = includeOriginal;
     }
 }

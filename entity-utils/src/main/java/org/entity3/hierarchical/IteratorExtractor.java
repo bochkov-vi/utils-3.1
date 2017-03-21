@@ -6,16 +6,13 @@
 
 package org.entity3.hierarchical;
 
-import org.entity3.IHierarchical;
-
 import java.util.Iterator;
 
 /**
  * @param <T>
  * @author bochkov
  */
-public interface IteratorExtractor<T extends IHierarchical> {
-
+public interface IteratorExtractor<T> {
     Iterator<T> extractIterator(T e);
 
 }

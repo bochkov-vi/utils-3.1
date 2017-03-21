@@ -5,7 +5,7 @@
  */
 package org.entity3.hierarchical;
 
-import org.entity3.IHierarchical;
+import org.entity3.IChild;
 
 import java.util.Iterator;
 
@@ -13,7 +13,7 @@ import java.util.Iterator;
  * @param <T>
  * @author bochkov
  */
-public class ParentIteratorExtractor<T extends IHierarchical> implements IteratorExtractor<T> {
+public class ParentIteratorExtractor<T extends IChild<T,?>> implements IteratorExtractor<T> {
 
 
     public Iterator<T> extractIterator(T e) {
