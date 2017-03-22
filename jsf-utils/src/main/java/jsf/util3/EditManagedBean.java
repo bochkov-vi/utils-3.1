@@ -102,6 +102,8 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
     }
 
     public String delete() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        context.getExternalContext().getFlash().setKeepMessages(true);
         if (selected != null) {
             try {
                 getRepository().delete(selected);
@@ -118,6 +120,8 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
 
     public String save() {
         boolean isNew = selected.isNew();
+        FacesContext context = FacesContext.getCurrentInstance();
+        context.getExternalContext().getFlash().setKeepMessages(true);
         try {
             selected = getRepository().saveAndFlush(selected);
             addInfoMessage(MessageFormat.format("{0}{1}", msg.getProperty(INFO_ON_SAVE), selected.getId()));
