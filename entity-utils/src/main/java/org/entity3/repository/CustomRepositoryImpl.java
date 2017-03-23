@@ -41,16 +41,6 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
 
 
     @Override
-    public <S extends T> S save(S entity) {
-        return super.save(entity);
-    }
-
-    @Override
-    public <S extends T> S saveAndFlush(S entity) {
-        return super.saveAndFlush(entity);
-    }
-
-    @Override
     public <S extends T> List<S> save(Iterable<S> entities) {
         return super.save(entities);
     }

@@ -11,6 +11,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
@@ -32,6 +33,7 @@ import java.util.Set;
  * Created by bochkov on 16.03.17.
  */
 @Repository
+@Transactional(readOnly = true)
 public class BidirectionalCustomRepository<T extends Persistable<ID>, ID extends Serializable> extends CustomRepositoryImpl<T, ID> {
 
 
@@ -56,9 +58,7 @@ public class BidirectionalCustomRepository<T extends Persistable<ID>, ID extends
                 mappedBy = Iterables.getFirst(Iterables.transform(Iterables.<Attribute>filter(metamodel.managedType(((Bindable) direct)
                         .getBindableJavaType()).getAttributes(), attribute ->
                         ((Bindable) attribute).getBindableJavaType().equals(currentClass) &&
-                        direct.getName().equals(extractMappedBy(attribute))), attribute -> {
-                    return attribute.getName();
-                }), null);
+                        direct.getName().equals(extractMappedBy(attribute))), attribute -> attribute.getName()), null);
             }
 
 
@@ -92,10 +92,12 @@ public class BidirectionalCustomRepository<T extends Persistable<ID>, ID extends
     }
 
     @Override
+    @Transactional
     public <S extends T> S save(S entity) {
         return super.save(prepareSave(entity));
     }
 
+    @Transactional
     <S extends T> S prepareSave(S entity) {
         try {
             if (entity != null) {
@@ -103,13 +105,13 @@ public class BidirectionalCustomRepository<T extends Persistable<ID>, ID extends
                     Collection collection = biDirect.directeRefs(entity);
                     biDirect.putRefToChild(collection, entity);
                     if (collection != null) {
-                        for (Object c : collection) {
+                       /* for (Object c : collection) {
                             if ((Boolean) PropertyUtils.getProperty(c, "new")) {
                                 em.persist(c);
                             } else {
                                 em.merge(c);
                             }
-                        }
+                        }*/
                         if (!entity.isNew()) {
                             T oldEntity = findOne(entity.getId());
                             Collection oldRefs = biDirect.directeRefs(oldEntity);
@@ -131,11 +133,6 @@ public class BidirectionalCustomRepository<T extends Persistable<ID>, ID extends
             throw new RuntimeException(e);
         }
         return entity;
-    }
-
-    @Override
-    public <S extends T> S saveAndFlush(S entity) {
-        return super.saveAndFlush(entity);
     }
 
     @Override
