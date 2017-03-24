@@ -55,10 +55,10 @@ public class BidirectionalCustomRepository<T extends Persistable<ID>, ID extends
             BiDirect<T> result = null;
             String mappedBy = extractMappedBy(direct);
             if (Strings.isNullOrEmpty(mappedBy)) {
-                mappedBy = Iterables.getFirst(Iterables.transform(Iterables.<Attribute>filter(metamodel.managedType(((Bindable) direct)
+                mappedBy = Iterables.getFirst(Iterables.transform((Iterables.<Attribute>filter(metamodel.managedType(((Bindable) direct)
                         .getBindableJavaType()).getAttributes(), attribute ->
                         ((Bindable) attribute).getBindableJavaType().equals(currentClass) &&
-                        direct.getName().equals(extractMappedBy(attribute))), attribute -> attribute.getName()), null);
+                        direct.getName().equals(extractMappedBy(attribute)))), attribute -> attribute.getName()), null);
             }
 
 
