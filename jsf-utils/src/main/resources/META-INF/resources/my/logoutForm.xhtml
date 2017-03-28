@@ -1,0 +1,18 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://java.sun.com/jsf/composite" xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+<cc:interface>
+    <cc:attribute name="signoutLabel" default="Выйти"/>
+    <cc:attribute name="signoutId" default="btSignout"/>
+    <cc:attribute name="signoutAction" default="logout"/>
+</cc:interface>
+<cc:implementation>
+    <form action="${request.contextPath}/#{cc.attrs.signoutAction}">
+        <button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left"
+                id="#{cc.attrs.signoutId}" type="submit" style="margin: auto;display: table">
+            <span class="ui-button-icon-left ui-icon ui-c fa fa-sign-out"></span>
+            <span class="ui-button-text ui-c">#{cc.attrs.signoutLabel}</span>
+        </button>
+    </form>
+</cc:implementation>
+</html>
