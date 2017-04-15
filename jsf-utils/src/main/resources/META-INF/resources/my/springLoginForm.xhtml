@@ -13,11 +13,6 @@
     <cc:attribute name="remembermeLabel" default="Запомнить меня"/>
 </cc:interface>
 <cc:implementation>
-    <h:head>
-        <script type="text/javascript">
-            $('##{cc.attrs.signinId}').button();
-        </script>
-    </h:head>
     <form method="POST" action="${request.contextPath}/#{cc.attrs.loginURL}">
         <table>
             <tr>
@@ -46,15 +41,16 @@
                 </td>
                 <td>
                     <input class="ui-chkbox-icon ui-icon ui-icon-blank ui-c" type="checkbox"
-                           id="#{cc.attrs.remembermeId}" name="#{cc.attrs.remembermeId}"/>
+                           id="#{cc.attrs.remembermeId}" name="#{cc.attrs.remembermeId}" checked="true"/>
                 </td>
             </tr>
         </table>
 
         <button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left"
                 id="#{cc.attrs.signinId}" type="submit" style="margin: auto;display: table">
-            <span class="ui-button-icon-left ui-icon ui-c fa fa-sign-in"></span>
+
             <span class="ui-button-text ui-c">#{cc.attrs.signinLabel}</span>
+            <span class="ui-button-icon-left ui-icon ui-c fa fa-sign-in"></span>
         </button>
     </form>
 </cc:implementation>

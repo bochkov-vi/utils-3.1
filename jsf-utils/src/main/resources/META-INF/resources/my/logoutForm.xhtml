@@ -9,9 +9,9 @@
 <cc:implementation>
     <form action="${request.contextPath}/#{cc.attrs.signoutAction}">
         <button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left"
-                id="#{cc.attrs.signoutId}" type="submit" style="margin: auto;display: table">
-            <span class="ui-button-icon-left ui-icon ui-c fa fa-sign-out"></span>
+                id="#{cc.attrs.signoutId}" type="submit">
             <span class="ui-button-text ui-c">#{cc.attrs.signoutLabel}</span>
+            <span class="ui-button-icon-left ui-icon ui-c fa fa-sign-out"></span>
         </button>
     </form>
 </cc:implementation>
