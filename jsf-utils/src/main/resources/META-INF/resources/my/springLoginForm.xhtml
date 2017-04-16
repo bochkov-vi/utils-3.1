@@ -13,7 +13,7 @@
     <cc:attribute name="remembermeLabel" default="Запомнить меня"/>
 </cc:interface>
 <cc:implementation>
-    <form method="POST" action="${request.contextPath}/#{cc.attrs.loginURL}">
+    <form method="post" action="${request.contextPath}/#{cc.attrs.loginURL}">
         <table>
             <tr>
                 <td style="text-align: right">
@@ -41,7 +41,7 @@
                 </td>
                 <td>
                     <input class="ui-chkbox-icon ui-icon ui-icon-blank ui-c" type="checkbox"
-                           id="#{cc.attrs.remembermeId}" name="#{cc.attrs.remembermeId}" checked="true"/>
+                           id="#{cc.attrs.remembermeId}" name="#{cc.attrs.remembermeId}" checked="checked"/>
                 </td>
             </tr>
         </table>
