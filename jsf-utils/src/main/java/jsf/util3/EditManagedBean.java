@@ -5,8 +5,11 @@
  */
 package jsf.util3;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import org.entity3.IIdable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,6 +19,7 @@ import org.springframework.data.domain.Persistable;
 import javax.faces.context.FacesContext;
 import java.io.Serializable;
 import java.text.MessageFormat;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,13 +46,12 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
 
     protected T selected;
 
-    protected String editOutcome = "edit";
+//    protected String editOutcome = "edit";
 
-    protected String saveOutcome = "edit";
+//    protected String saveOutcome = "edit";
 
-    protected String listOutcome = "list";
 
-    protected String createOutcome = "edit";
+    //protected String createOutcome = "edit";
 
     protected String idParameterName = "id";
 
@@ -88,12 +91,12 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
 
     public String prepareCreate() {
         selected = null;
-        return createOutcome;
+        return getToCreateOutcome();
     }
 
     public String prepareEdit(T entity) {
         selected = entity;
-        return editOutcome;
+        return getToEditOutcome();
     }
 
     public String prepareDelete(T entity) {
@@ -115,7 +118,7 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
         } else {
             addErrorMessage(msg.getProperty(ERROR_ON_EMPTY));
         }
-        return listOutcome;
+        return getAfterDeleteOutcome();
     }
 
     public String save() {
@@ -129,12 +132,14 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, ERROR_ON_SAVE, e);
             addErrorMessage(msg.getProperty(ERROR_ON_SAVE), e.getRootCause());
             return null;
-        }catch (Exception e){
+        } catch (Exception e) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, ERROR_ON_SAVE, e);
-            addErrorMessage(msg.getProperty(ERROR_ON_SAVE), MoreObjects.firstNonNull(e.getCause(),e));
+            addErrorMessage(msg.getProperty(ERROR_ON_SAVE), MoreObjects.firstNonNull(e.getCause(), e));
             return null;
         }
-        return (isNew ? createOutcome : saveOutcome) + "?faces-redirect=true&" + idParameterName + "=" + stringFromId(selected.getId());
+        Map<String,String>params = ImmutableMap.of("faces-redirect","true",idParameterName,stringFromId(selected.getId()));
+        String outcome = isNew ? getAfterCreateOutcome(params) : getAfterEditOutcome(params);
+        return outcome;
     }
 
     public T getSelected() {
@@ -179,40 +184,76 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
         return null;
     }
 
-
-    public String getEditOutcome() {
-        return editOutcome;
+    public String getToListOutcome() {
+        return MoreObjects.firstNonNull(getParamOutcome(), "list");
     }
 
-    public void setEditOutcome(String editOutcome) {
-        this.editOutcome = editOutcome;
+    public String getAfterDeleteOutcome() {
+        return MoreObjects.firstNonNull(getParamOutcome(), "list");
     }
 
-    public String getListOutcome() {
-        return listOutcome;
+    public String getToEditOutcome() {
+        return "edit";
     }
 
-    public void setListOutcome(String listOutcome) {
-        this.listOutcome = listOutcome;
+    public String getAfterEditOutcome() {
+        return MoreObjects.firstNonNull(getParamOutcome(), "edit");
     }
 
-    public String getCreateOutcome() {
-        return createOutcome;
+    public String getAfterCreateOutcome() {
+        return MoreObjects.firstNonNull(getParamOutcome(), "edit");
     }
 
-    public void setCreateOutcome(String createOutcome) {
-        this.createOutcome = createOutcome;
+    public String getToCreateOutcome() {
+        return "edit";
+    }
+
+
+    public String getToListOutcome(Map<String, String> params) {
+        return joinOutcome(getToListOutcome(), params);
+    }
+
+    public String getAfterDeleteOutcome(Map<String, String> params) {
+        return joinOutcome(getAfterDeleteOutcome(), params);
+    }
+
+    public String getToEditOutcome(Map<String, String> params) {
+        return joinOutcome(getToEditOutcome(), params);
+    }
+
+    public String getAfterEditOutcome(Map<String, String> params) {
+        return joinOutcome(getAfterEditOutcome(), params);
+    }
+
+    public String getAfterCreateOutcome(Map<String, String> params) {
+        return joinOutcome(getAfterCreateOutcome(), params);
+    }
+
+    public String getToCreateOutcome(Map<String, String> params) {
+        return joinOutcome(getToCreateOutcome(), params);
+    }
+
+
+    public String getParamOutcome() {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        String outcome = fc.getExternalContext().getRequestParameterMap().get("outcome");
+        return outcome;
+    }
+
+    String joinOutcome(String outcome, Map<String, String> params) {
+        if (params != null && params.isEmpty()) {
+            if (outcome.contains("?")) {
+                outcome = outcome + "&" + Joiner.on('&').join(Iterables.transform(params.entrySet(), e -> e.getKey() + "=" + e.getValue()));
+            } else {
+                outcome = outcome + "?" + Joiner.on('&').join(Iterables.transform(params.entrySet(), e -> e.getKey() + "=" + e.getValue()));
+            }
+        }
+        return outcome;
     }
 
     public String getIdParameterName() {
         return idParameterName;
     }
 
-    public String getSaveOutcome() {
-        return saveOutcome;
-    }
 
-    public void setSaveOutcome(String saveOutcome) {
-        this.saveOutcome = saveOutcome;
-    }
 }
