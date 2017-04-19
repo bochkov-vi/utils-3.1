@@ -241,7 +241,7 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
     }
 
     String joinOutcome(String outcome, Map<String, String> params) {
-        if (params != null && params.isEmpty()) {
+        if (params != null && !params.isEmpty()) {
             if (outcome.contains("?")) {
                 outcome = outcome + "&" + Joiner.on('&').join(Iterables.transform(params.entrySet(), e -> e.getKey() + "=" + e.getValue()));
             } else {
