@@ -5,6 +5,8 @@
  */
 package org.entity3.hierarchical;
 
+import com.google.common.collect.ImmutableList;
+
 import java.util.*;
 
 /**
@@ -18,12 +20,16 @@ public class RecursiveIterator<T> implements Iterator<T> {
     IteratorExtractor<T> extractor;
     T rootEntity;
     T next = null;
-    boolean includeOriginal;
+
 
     public RecursiveIterator(IteratorExtractor<T> extractor, boolean includeOriginal, T rootEntity) {
         this.extractor = extractor;
-        iterators.add(extractor.extractIterator(rootEntity));
-        this.includeOriginal = includeOriginal;
+        if (includeOriginal)
+            iterators.add(ImmutableList.of(rootEntity).iterator());
+        Iterator<T> iterator = extractor.extractIterator(rootEntity);
+        if (iterator != null)
+            iterators.add(iterator);
+
         this.rootEntity = rootEntity;
     }
 
@@ -33,13 +39,8 @@ public class RecursiveIterator<T> implements Iterator<T> {
     }
 
     public T next() {
-        if (next == null && includeOriginal) {
-            next = rootEntity;
-        } else {
-            next = getCurrentIterator().next();
-            if (Objects.equals(rootEntity, next)) {
-                next = null;
-            }
+        next = getCurrentIterator().next();
+        if (!Objects.equals(rootEntity, next)) {
             Iterator<T> nextIterator = extractor.extractIterator(next);
             if (nextIterator != null) {
                 iterators.add(nextIterator);
