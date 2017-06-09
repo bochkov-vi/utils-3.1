@@ -9,6 +9,7 @@ package jsf.util3;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
 
+import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import java.util.Map;
 
@@ -19,12 +20,14 @@ import java.util.Map;
 public class ViewScope implements Scope {
 
 
-
     public Object get(final String name, final ObjectFactory objectFactory) {
-        final Map<String, Object> viewMap = FacesContext.getCurrentInstance().getViewRoot().getViewMap();
+        FacesContext fc = FacesContext.getCurrentInstance();
+        UIViewRoot viewRoot = fc.getViewRoot();
+        if (viewRoot != null) {
+            final Map<String, Object> viewMap = FacesContext.getCurrentInstance().getViewRoot().getViewMap();
 
-        if (viewMap.containsKey(name)) {
-            Object bean = viewMap.get(name);
+            if (viewMap.containsKey(name)) {
+                Object bean = viewMap.get(name);
 
 //            // restore a transient autowired beans after re-serialization bean
 //            WebApplicationContext webAppContext = ContextLoader.getCurrentWebApplicationContext();
@@ -35,14 +38,15 @@ public class ViewScope implements Scope {
 //                bean = autowireFactory.configureBean(bean, name);
 //            }
 //            // end restore
-            return bean;
-        } else {
-            final Object object = objectFactory.getObject();
-            viewMap.put(name, object);
-            return object;
+                return bean;
+            } else {
+                final Object object = objectFactory.getObject();
+                viewMap.put(name, object);
+                return object;
+            }
         }
+        return null;
     }
-
 
 
     public String getConversationId() {

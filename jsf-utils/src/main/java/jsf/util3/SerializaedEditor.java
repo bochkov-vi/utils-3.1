@@ -17,6 +17,8 @@ import org.springframework.core.NestedRuntimeException;
 import org.springframework.data.domain.Persistable;
 
 import javax.faces.context.FacesContext;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Map;
@@ -31,7 +33,7 @@ import static jsf.util3.JsfUtil.addInfoMessage;
  * @param <T>
  * @author viktor
  */
-public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, ID extends Serializable> extends ManagedConverter<T, ID> {
+public abstract class SerializaedEditor<T extends Persistable<ID> & IIdable<ID> & Serializable, ID extends Serializable> extends ManagedConverter<T, ID> implements Serializable {
 
     public static final String ERROR_ON_SAVE = "errorOnSave";
 
@@ -59,44 +61,44 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
     @Qualifier("jsf-util-messages")
     protected Properties msg;
 
-    protected EditManagedBean(String idParameterName) {
+    protected SerializaedEditor(String idParameterName) {
         this.idParameterName = idParameterName;
     }
 
-    protected EditManagedBean(Class<T> entityClass, Class<ID> idClass, String idParameterName) {
+    protected SerializaedEditor(Class<T> entityClass, Class<ID> idClass, String idParameterName) {
         super(entityClass, idClass);
         this.idParameterName = idParameterName;
     }
 
-    protected EditManagedBean(Class<T> entityClass, String idParameterName) {
+    protected SerializaedEditor(Class<T> entityClass, String idParameterName) {
         super(entityClass);
         this.idParameterName = idParameterName;
     }
 
-    protected EditManagedBean(Class<T> entityClass, Class<ID> idClass) {
+    protected SerializaedEditor(Class<T> entityClass, Class<ID> idClass) {
         super(entityClass, idClass);
         idParameterName = entityClass.getSimpleName();
     }
 
-    protected EditManagedBean(Class<T> entityClass) {
+    protected SerializaedEditor(Class<T> entityClass) {
         super(entityClass);
         idParameterName = entityClass.getSimpleName();
     }
 
-    protected EditManagedBean() {
+    protected SerializaedEditor() {
         super();
         idParameterName = entityClass.getSimpleName();
     }
 
 
     public String prepareCreate() {
-        selected = null;
-        return getToCreateOutcome();
+        setSelected(null);
+        return getToCreateAction();
     }
 
     public String prepareEdit(T entity) {
         selected = entity;
-        return getToEditOutcome();
+        return getToEditAction();
     }
 
     public String prepareDelete(T entity) {
@@ -107,7 +109,7 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
     public String delete() {
         FacesContext context = FacesContext.getCurrentInstance();
         context.getExternalContext().getFlash().setKeepMessages(true);
-        if (selected != null) {
+        if (selected != null && !selected.isNew()) {
             try {
                 getRepository().delete(selected);
                 selected = null;
@@ -118,16 +120,17 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
         } else {
             addErrorMessage(msg.getProperty(ERROR_ON_EMPTY));
         }
-        return getAfterDeleteOutcome();
+        return getAfterDeleteAction();
     }
 
     public String save() {
-        boolean isNew = selected.isNew();
+
+        boolean isNew = getSelected().isNew();
         FacesContext context = FacesContext.getCurrentInstance();
         context.getExternalContext().getFlash().setKeepMessages(true);
         try {
-            selected = getRepository().saveAndFlush(selected);
-            addInfoMessage(MessageFormat.format("{0}{1}", msg.getProperty(INFO_ON_SAVE), selected.getId()));
+            setSelected(getRepository().saveAndFlush(getSelected()));
+            addInfoMessage(MessageFormat.format("{0}{1}", msg.getProperty(INFO_ON_SAVE), getSelected().getId()));
         } catch (NestedRuntimeException e) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, ERROR_ON_SAVE, e);
             addErrorMessage(msg.getProperty(ERROR_ON_SAVE), e.getRootCause());
@@ -137,13 +140,11 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
             addErrorMessage(msg.getProperty(ERROR_ON_SAVE), MoreObjects.firstNonNull(e.getCause(), e));
             return null;
         }
-        Map<String,String>params = ImmutableMap.of("faces-redirect","true",idParameterName,stringFromId(selected.getId()));
-        String outcome = isNew ? getAfterCreateOutcome(params) : getAfterEditOutcome(params);
+        String outcome = isNew ? getAfterCreateAction() : getAfterEditAction();
         return outcome;
     }
 
     public T getSelected() {
-
         if (selected == null) {
             selected = entityFromRequest();
         }
@@ -177,78 +178,43 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
         try {
             return entityClass.newInstance();
         } catch (InstantiationException ex) {
-            Logger.getLogger(EditManagedBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SerializaedEditor.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(EditManagedBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SerializaedEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
 
-    public String getToListOutcome() {
-        return MoreObjects.firstNonNull(getParamOutcome(), "list");
+    public String getToListAction() {
+        return "list";
     }
 
-    public String getAfterDeleteOutcome() {
-        return MoreObjects.firstNonNull(getParamOutcome(), "list");
+    public String getAfterDeleteAction() {
+        return getToListAction();
     }
 
-    public String getToEditOutcome() {
+    public String getToDeleteAction() {
+        return "delete";
+    }
+
+    public String getToEditAction() {
         return "edit";
     }
 
-    public String getAfterEditOutcome() {
-        return MoreObjects.firstNonNull(getParamOutcome(), "edit");
+    public String getCancelEditAction() {
+        return "cancel";
     }
 
-    public String getAfterCreateOutcome() {
-        return MoreObjects.firstNonNull(getParamOutcome(), "edit");
+    public String getAfterEditAction() {
+        return getToListAction();
     }
 
-    public String getToCreateOutcome() {
-        return "edit";
+    public String getAfterCreateAction() {
+        return getAfterEditAction();
     }
 
-
-    public String getToListOutcome(Map<String, String> params) {
-        return joinOutcome(getToListOutcome(), params);
-    }
-
-    public String getAfterDeleteOutcome(Map<String, String> params) {
-        return joinOutcome(getAfterDeleteOutcome(), params);
-    }
-
-    public String getToEditOutcome(Map<String, String> params) {
-        return joinOutcome(getToEditOutcome(), params);
-    }
-
-    public String getAfterEditOutcome(Map<String, String> params) {
-        return joinOutcome(getAfterEditOutcome(), params);
-    }
-
-    public String getAfterCreateOutcome(Map<String, String> params) {
-        return joinOutcome(getAfterCreateOutcome(), params);
-    }
-
-    public String getToCreateOutcome(Map<String, String> params) {
-        return joinOutcome(getToCreateOutcome(), params);
-    }
-
-
-    public String getParamOutcome() {
-        FacesContext fc = FacesContext.getCurrentInstance();
-        String outcome = fc.getExternalContext().getRequestParameterMap().get("outcome");
-        return outcome;
-    }
-
-    String joinOutcome(String outcome, Map<String, String> params) {
-        if (params != null && !params.isEmpty()) {
-            if (outcome.contains("?")) {
-                outcome = outcome + "&" + Joiner.on('&').join(Iterables.transform(params.entrySet(), e -> e.getKey() + "=" + e.getValue()));
-            } else {
-                outcome = outcome + "?" + Joiner.on('&').join(Iterables.transform(params.entrySet(), e -> e.getKey() + "=" + e.getValue()));
-            }
-        }
-        return outcome;
+    public String getToCreateAction() {
+        return getToEditAction();
     }
 
     public String getIdParameterName() {
