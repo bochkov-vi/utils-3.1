@@ -28,7 +28,7 @@ public interface PropertySelectionRepository<T, ID> {
     <P> P findOne(PropertySelection<P> selection, Specification<T> spec, Sort sort);
 
 
-    long count(PropertySelection<Long> selection, Specification<T> spec);
+    <P> long count(PropertySelection<P> selection, Specification<T> spec);
 
-    long count(PropertySelection<Long> selection, Specification<T> spec, boolean distinct);
+    <P> long count(PropertySelection<P> selection, Specification<T> spec, boolean distinct);
 }

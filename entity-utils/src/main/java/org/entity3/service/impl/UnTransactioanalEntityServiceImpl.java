@@ -409,12 +409,12 @@ public abstract class UnTransactioanalEntityServiceImpl<T, ID extends Serializab
     }
 
 
-    public long count(PropertySelection<Long> selection, Specification<T> spec) {
+    public <P>long count(PropertySelection<P> selection, Specification<T> spec) {
         return getRepository().count(selection, spec);
     }
 
 
-    public long count(PropertySelection<Long> selection, Specification<T> spec, boolean distinct) {
+    public <P>long count(PropertySelection<P> selection, Specification<T> spec, boolean distinct) {
         return getRepository().count(selection, spec, distinct);
     }
 

@@ -121,5 +121,4 @@ public class Hierarchicals {
     public static <C extends IChild<C, ?>> List<C> getAllParents(boolean includeOriginal, C... childs) {
         return getAllParents(includeOriginal, Lists.newArrayList(childs));
     }
-
 }

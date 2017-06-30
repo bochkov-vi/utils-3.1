@@ -146,7 +146,7 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
 
     @Override
     public <P> List<P> findAll(PropertySelection<P> selection, Specification<T> spec, Sort sort) {
-        return null;
+        return findAll(selection, spec, sort, null);
     }
 
     @Override
@@ -160,11 +160,11 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
     }
 
 
-    public long count(PropertySelection<Long> selection, Specification<T> spec) {
+    public <P> long count(PropertySelection<P> selection, Specification<T> spec) {
         return count(selection, spec, true);
     }
 
-    public long count(PropertySelection<Long> selection, Specification<T> spec, boolean distinct) {
+    public <P> long count(PropertySelection<P> selection, Specification<T> spec, boolean distinct) {
         return getCountPropertyQuery(selection, spec, distinct).getSingleResult();
     }
 
@@ -179,7 +179,7 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
     }
 
 
-    protected <P> TypedQuery<P> getCountPropertyQuery(PropertySelection<P> sel, Specification<T> spec, boolean distinct) {
+    protected <P> TypedQuery<Long> getCountPropertyQuery(PropertySelection<P> sel, Specification<T> spec, boolean distinct) {
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery query = builder.createQuery();
         Root<T> root = applySpecificationToCriteria(spec, query);
