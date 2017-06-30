@@ -31,17 +31,7 @@ import static jsf.util3.JsfUtil.addInfoMessage;
  * @param <T>
  * @author viktor
  */
-public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, ID extends Serializable> extends ManagedConverter<T, ID> {
-
-    public static final String ERROR_ON_SAVE = "errorOnSave";
-
-    public static final String ERROR_ON_DELETE = "errorOnDelete";
-
-    public static final String ERROR_ON_EMPTY = "errorOnEmptySelected";
-
-    public static final String INFO_ON_SAVE = "infoOnObjectSave";
-
-    public static final String INFO_ON_OBJECT_EXISTS = "infoOnObjectExists";
+public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, ID extends Serializable> extends JsfEditService<T, ID> {
 
 
     protected T selected;
@@ -52,12 +42,6 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
 
 
     //protected String createOutcome = "edit";
-
-    protected String idParameterName = "id";
-
-    @Autowired
-    @Qualifier("jsf-util-messages")
-    protected Properties msg;
 
     protected EditManagedBean(String idParameterName) {
         this.idParameterName = idParameterName;
@@ -157,33 +141,6 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
         this.selected = selected;
     }
 
-    public T entityFromRequest(String parameterName) {
-        T result = null;
-        FacesContext fc = FacesContext.getCurrentInstance();
-        if (fc != null) {
-            String idStr = fc.getExternalContext().getRequestParameterMap().get(parameterName);
-            if (!Strings.isNullOrEmpty(idStr)) {
-                result = this.convert(idStr);
-            }
-        }
-        return result;
-    }
-
-    public T entityFromRequest() {
-        return entityFromRequest(idParameterName);
-    }
-
-    public T createNewInstance() {
-        try {
-            return entityClass.newInstance();
-        } catch (InstantiationException ex) {
-            Logger.getLogger(EditManagedBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            Logger.getLogger(EditManagedBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-
     public String getToListOutcome() {
         return MoreObjects.firstNonNull(getParamOutcome(), "list");
     }
@@ -249,10 +206,6 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
             }
         }
         return outcome;
-    }
-
-    public String getIdParameterName() {
-        return idParameterName;
     }
 
 
