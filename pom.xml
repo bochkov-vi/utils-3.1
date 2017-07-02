@@ -12,6 +12,20 @@
         <module>entity-utils</module>
     </modules>
     <packaging>pom</packaging>
+    <properties>
+        <spring.version>4.3.9.RELEASE</spring.version>
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>${spring.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <build>
         <plugins>
             <plugin>
