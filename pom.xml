@@ -10,6 +10,7 @@
     <modules>
         <module>jsf-utils</module>
         <module>entity-utils</module>
+        <module>coordinate-converters</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
@@ -35,7 +36,20 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

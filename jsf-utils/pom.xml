@@ -11,7 +11,11 @@
     </parent>
     <packaging>jar</packaging>
     <dependencies>
-
+        <dependency>
+            <groupId>com.bochkov</groupId>
+            <artifactId>coordinate-converters</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
