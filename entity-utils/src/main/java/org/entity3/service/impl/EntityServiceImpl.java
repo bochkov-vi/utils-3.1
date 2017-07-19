@@ -77,25 +77,21 @@ public abstract class EntityServiceImpl<T, ID extends Serializable> extends UnTr
     }
 
     @Transactional
-
     public void delete(ID id) {
         super.delete(id);
     }
 
     @Transactional
-
     public void delete(T t) {
         super.delete(t);
     }
 
     @Transactional
-
     public void delete(Iterable<? extends T> itrbl) {
         super.delete(itrbl);
     }
 
     @Transactional
-
     public void deleteAll() {
         super.deleteAll();
     }

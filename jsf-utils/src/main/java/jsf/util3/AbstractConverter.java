@@ -27,10 +27,11 @@ public abstract class AbstractConverter<T, ID extends Serializable> implements S
 
     protected AbstractConverter(Class<T> entityClass, Class<ID> idClass) {
         this.entityClass = entityClass;
-        if (idClass == null)
+        if (idClass == null) {
             idClass = ((Class<ID>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1]);
-        else
+        } else {
             this.idClass = idClass;
+        }
     }
 
     protected AbstractConverter(Class<T> entityClass) {
@@ -53,9 +54,19 @@ public abstract class AbstractConverter<T, ID extends Serializable> implements S
         return "";
     }
 
-    public ID idFromString(String s) throws RuntimeException {
+
+    public T convertAny(Object s) {
+        if (s instanceof String) {
+            return convert((String) s);
+        } else if (s != null) {
+            return convert(String.valueOf(s));
+        }
+        return null;
+    }
+
+    public static <ID extends Serializable> ID makeIdFromString(Class<ID> idClass, String s) {
         ID id = null;
-        if (!Strings.isNullOrEmpty(s))
+        if (!Strings.isNullOrEmpty(s)) {
             try {
                 id = idClass.getConstructor(String.class).newInstance(s);
             } catch (InstantiationException e) {
@@ -67,13 +78,24 @@ public abstract class AbstractConverter<T, ID extends Serializable> implements S
             } catch (NoSuchMethodException e) {
                 throw new RuntimeException(e);
             }
+        }
         return id;
     }
 
+    public ID idFromString(String s) throws RuntimeException {
+        return makeIdFromString(idClass, s);
+    }
+
     public String stringFromId(ID id) {
-        if (id != null)
+        return makeStringFromId(id);
+    }
+
+    public static <ID> String makeStringFromId(ID id) {
+        if (id != null) {
             return String.valueOf(id);
-        else return "";
+        } else {
+            return "";
+        }
     }
 
 }

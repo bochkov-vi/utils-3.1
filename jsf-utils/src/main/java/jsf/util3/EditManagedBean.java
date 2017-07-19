@@ -7,12 +7,10 @@ package jsf.util3;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
+import jsf.util3.service.impl.AbstractJsfEntityService;
 import org.entity3.IIdable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.data.domain.Persistable;
 
@@ -20,7 +18,6 @@ import javax.faces.context.FacesContext;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,7 +28,7 @@ import static jsf.util3.JsfUtil.addInfoMessage;
  * @param <T>
  * @author viktor
  */
-public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, ID extends Serializable> extends JsfEditService<T, ID> {
+public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, ID extends Serializable> extends AbstractJsfEntityService<T, ID> {
 
 
     protected T selected;
@@ -105,6 +102,8 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
         return getAfterDeleteOutcome();
     }
 
+    
+    
     public String save() {
         boolean isNew = selected.isNew();
         FacesContext context = FacesContext.getCurrentInstance();

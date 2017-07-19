@@ -10,17 +10,17 @@ import java.util.List;
 /**
  * Created by bochkov on 19.03.14.
  */
-public abstract class ManagedConverter<T extends IIdable<ID>, ID extends Serializable> extends AbstractConverter<T, ID> {
+public abstract class EntityConverter<T extends IIdable<ID>, ID extends Serializable> extends AbstractConverter<T, ID> {
 
-    protected ManagedConverter() {
+    protected EntityConverter() {
         super();
     }
 
-    protected ManagedConverter(Class<T> entityClass, Class<ID> idClass) {
+    protected EntityConverter(Class<T> entityClass, Class<ID> idClass) {
         super(entityClass, idClass);
     }
 
-    protected ManagedConverter(Class<T> entityClass) {
+    protected EntityConverter(Class<T> entityClass) {
         super(entityClass);
     }
 
@@ -32,15 +32,6 @@ public abstract class ManagedConverter<T extends IIdable<ID>, ID extends Seriali
         ID id = idFromString(s);
         if (id != null) {
             return getRepository().findOne(id);
-        }
-        return null;
-    }
-
-    public T convertAny(Object s) {
-        if (s instanceof String) {
-            return convert((String) s);
-        } else if (s != null) {
-            return convert(String.valueOf(s));
         }
         return null;
     }

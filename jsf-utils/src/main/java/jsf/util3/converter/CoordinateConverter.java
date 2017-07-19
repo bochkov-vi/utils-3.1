@@ -7,16 +7,12 @@ package jsf.util3.converter;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import java.io.Serializable;
-import java.text.ChoiceFormat;
-import java.text.MessageFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
 
 /**
  *
  * @author bochkov
  */
+
 public class CoordinateConverter extends com.bochkov.coordinate.CoordinateConverter implements Converter{
 
 
