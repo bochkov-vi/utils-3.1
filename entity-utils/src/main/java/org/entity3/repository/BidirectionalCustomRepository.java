@@ -17,6 +17,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.ManagedType;
@@ -81,11 +82,16 @@ public class BidirectionalCustomRepository<T extends Persistable<ID>, ID extends
                 if (manyToMany.cascade().length == 0) {
                     return manyToMany.mappedBy();
                 }
-            } else if (anotation instanceof OneToMany) {
+            } else if (anotation instanceof OneToMany ) {
                 OneToMany oneToMany = (OneToMany) anotation;
-                if (oneToMany.cascade().length == 0 && !oneToMany.orphanRemoval()) {
+               // if (oneToMany.cascade().length == 0 && !oneToMany.orphanRemoval()) {
                     return oneToMany.mappedBy();
-                }
+                //}
+            }else if (anotation instanceof OneToOne) {
+                OneToOne oneToOne = (OneToOne) anotation;
+                // if (oneToMany.cascade().length == 0 && !oneToMany.orphanRemoval()) {
+                return oneToOne.mappedBy();
+                //}
             }
             return (String) null;
         }), Predicates.notNull()), null);

@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  * @author viktor
  */
 @Component
-public class TimeZoneProvider implements Serializable{
+public class TimeZoneProvider  implements Serializable{
 
     private TimeZone timeZone = TimeZone.getDefault();
 
