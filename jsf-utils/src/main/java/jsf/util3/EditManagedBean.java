@@ -13,6 +13,7 @@ import jsf.util3.service.impl.AbstractJsfEntityService;
 import org.entity3.IIdable;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.data.domain.Persistable;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.faces.context.FacesContext;
 import java.io.Serializable;
@@ -28,7 +29,7 @@ import static jsf.util3.JsfUtil.addInfoMessage;
  * @param <T>
  * @author viktor
  */
-public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, ID extends Serializable> extends AbstractJsfEntityService<T, ID> {
+public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, ID extends Serializable> extends AbstractJsfEntityService<T, ID> implements IEditManagedBean<T, ID> {
 
 
     protected T selected;
@@ -70,21 +71,26 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
     }
 
 
+    @Override
     public String prepareCreate() {
         selected = null;
         return getToCreateOutcome();
     }
 
+    @Override
     public String prepareEdit(T entity) {
         selected = entity;
         return getToEditOutcome();
     }
 
+    @Override
     public String prepareDelete(T entity) {
         selected = entity;
         return null;
     }
 
+    @Override
+    @Transactional
     public String delete() {
         FacesContext context = FacesContext.getCurrentInstance();
         context.getExternalContext().getFlash().setKeepMessages(true);
@@ -104,6 +110,8 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
 
     
     
+    @Override
+    @Transactional
     public String save() {
         boolean isNew = selected.isNew();
         FacesContext context = FacesContext.getCurrentInstance();
@@ -125,6 +133,7 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
         return outcome;
     }
 
+    @Override
     public T getSelected() {
 
         if (selected == null) {
@@ -136,55 +145,68 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
         return selected;
     }
 
+    @Override
     public void setSelected(T selected) {
         this.selected = selected;
     }
 
+    @Override
     public String getToListOutcome() {
         return MoreObjects.firstNonNull(getParamOutcome(), "list");
     }
 
+    @Override
     public String getAfterDeleteOutcome() {
         return MoreObjects.firstNonNull(getParamOutcome(), "list");
     }
 
+    @Override
     public String getToEditOutcome() {
         return "edit";
     }
 
+    @Override
     public String getAfterEditOutcome() {
         return MoreObjects.firstNonNull(getParamOutcome(), "edit");
     }
 
+    @Override
     public String getAfterCreateOutcome() {
         return MoreObjects.firstNonNull(getParamOutcome(), "edit");
     }
 
+    @Override
     public String getToCreateOutcome() {
         return "edit";
     }
 
 
+    @Override
     public String getToListOutcome(Map<String, String> params) {
         return joinOutcome(getToListOutcome(), params);
     }
 
+    @Override
     public String getAfterDeleteOutcome(Map<String, String> params) {
         return joinOutcome(getAfterDeleteOutcome(), params);
     }
 
+    @Override
     public String getToEditOutcome(Map<String, String> params) {
         return joinOutcome(getToEditOutcome(), params);
     }
 
+    @Override
     public String getAfterEditOutcome(Map<String, String> params) {
         return joinOutcome(getAfterEditOutcome(), params);
     }
 
+    @Override
     public String getAfterCreateOutcome(Map<String, String> params) {
         return joinOutcome(getAfterCreateOutcome(), params);
     }
 
+    @Override
     public String getToCreateOutcome(Map<String, String> params) {
         return joinOutcome(getToCreateOutcome(), params);
     }
