@@ -59,7 +59,7 @@ public class BidirectionalCustomRepository<T extends Persistable<ID>, ID extends
                 mappedBy = Iterables.getFirst(Iterables.transform((Iterables.<Attribute>filter(metamodel.managedType(((Bindable) direct)
                         .getBindableJavaType()).getAttributes(), attribute ->
                         ((Bindable) attribute).getBindableJavaType().equals(currentClass) &&
-                        direct.getName().equals(extractMappedBy(attribute)))), attribute -> attribute.getName()), null);
+                                direct.getName().equals(extractMappedBy(attribute)))), attribute -> ((Attribute)attribute).getName()), null);
             }
 
 
@@ -82,12 +82,12 @@ public class BidirectionalCustomRepository<T extends Persistable<ID>, ID extends
                 if (manyToMany.cascade().length == 0) {
                     return manyToMany.mappedBy();
                 }
-            } else if (anotation instanceof OneToMany ) {
+            } else if (anotation instanceof OneToMany) {
                 OneToMany oneToMany = (OneToMany) anotation;
-               // if (oneToMany.cascade().length == 0 && !oneToMany.orphanRemoval()) {
-                    return oneToMany.mappedBy();
+                // if (oneToMany.cascade().length == 0 && !oneToMany.orphanRemoval()) {
+                return oneToMany.mappedBy();
                 //}
-            }else if (anotation instanceof OneToOne) {
+            } else if (anotation instanceof OneToOne) {
                 OneToOne oneToOne = (OneToOne) anotation;
                 // if (oneToMany.cascade().length == 0 && !oneToMany.orphanRemoval()) {
                 return oneToOne.mappedBy();
@@ -209,19 +209,21 @@ public class BidirectionalCustomRepository<T extends Persistable<ID>, ID extends
         }
 
         public void putRefToChild(Object child, Object ref) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-            if (child instanceof Collection) {
-                putRefToChild((Collection) child, ref);
-            } else {
-                if (inverseAttribute.isCollection()) {
-                    Collection inverseCollection = (Collection) PropertyUtils.getProperty(child, inverseAttribute.getName());
-                    if (inverseCollection == null) {
-                        inverseCollection = (Collection) inverseAttribute.getJavaType().getConstructor().newInstance();
-                    }
-                    if (!inverseCollection.contains(ref)) {
-                        inverseCollection.add(ref);
-                    }
+            if (child != null) {
+                if (child instanceof Collection) {
+                    putRefToChild((Collection) child, ref);
                 } else {
-                    PropertyUtils.setProperty(child, inverseAttribute.getName(), ref);
+                    if (inverseAttribute.isCollection()) {
+                        Collection inverseCollection = (Collection) PropertyUtils.getProperty(child, inverseAttribute.getName());
+                        if (inverseCollection == null) {
+                            inverseCollection = (Collection) inverseAttribute.getJavaType().getConstructor().newInstance();
+                        }
+                        if (!inverseCollection.contains(ref)) {
+                            inverseCollection.add(ref);
+                        }
+                    } else {
+                        PropertyUtils.setProperty(child, inverseAttribute.getName(), ref);
+                    }
                 }
             }
         }
@@ -263,7 +265,7 @@ public class BidirectionalCustomRepository<T extends Persistable<ID>, ID extends
             }
             BiDirect<?> biDirect = (BiDirect<?>) o;
             return Objects.equal(directAttribute, biDirect.directAttribute) &&
-                   Objects.equal(inverseAttribute, biDirect.inverseAttribute);
+                    Objects.equal(inverseAttribute, biDirect.inverseAttribute);
         }
     }
 }
