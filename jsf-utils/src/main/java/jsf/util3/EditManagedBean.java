@@ -9,8 +9,8 @@ import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
-import jsf.util3.service.impl.AbstractJsfEntityService;
-import org.entity3.IIdable;
+import jsf.util3.service.impl.JsfEntityServiceImpl;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.data.domain.Persistable;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +29,7 @@ import static jsf.util3.JsfUtil.addInfoMessage;
  * @param <T>
  * @author viktor
  */
-public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, ID extends Serializable> extends AbstractJsfEntityService<T, ID> implements IEditManagedBean<T, ID> {
+public abstract class EditManagedBean<T extends Persistable<ID> , ID extends Serializable> extends JsfEntityServiceImpl<T, ID> implements IEditManagedBean<T, ID> {
 
 
     protected T selected;
@@ -41,35 +41,17 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
 
     //protected String createOutcome = "edit";
 
-    protected EditManagedBean(String idParameterName) {
-        this.idParameterName = idParameterName;
+
+    public EditManagedBean() {
     }
 
-    protected EditManagedBean(Class<T> entityClass, Class<ID> idClass, String idParameterName) {
-        super(entityClass, idClass);
-        this.idParameterName = idParameterName;
+    public EditManagedBean(String... maskedProperty) {
+        super(maskedProperty);
     }
 
-    protected EditManagedBean(Class<T> entityClass, String idParameterName) {
-        super(entityClass);
-        this.idParameterName = idParameterName;
+    public EditManagedBean(String idParameterName, Iterable<String> maskedProperty) {
+        super(idParameterName, maskedProperty);
     }
-
-    protected EditManagedBean(Class<T> entityClass, Class<ID> idClass) {
-        super(entityClass, idClass);
-        idParameterName = entityClass.getSimpleName();
-    }
-
-    protected EditManagedBean(Class<T> entityClass) {
-        super(entityClass);
-        idParameterName = entityClass.getSimpleName();
-    }
-
-    protected EditManagedBean() {
-        super();
-        idParameterName = entityClass.getSimpleName();
-    }
-
 
     @Override
     public String prepareCreate() {
@@ -99,11 +81,11 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
                 getRepository().delete(selected);
                 selected = null;
             } catch (Exception e) {
-                JsfUtil.addErrorMessage(msg.getProperty(ERROR_ON_DELETE), ((NestedRuntimeException) e).getRootCause());
+                JsfUtil.addErrorMessage( messageSource.getMessage(ERROR_ON_SAVE,null, LocaleContextHolder.getLocale()), ((NestedRuntimeException) e).getRootCause());
                 return null;
             }
         } else {
-            addErrorMessage(msg.getProperty(ERROR_ON_EMPTY));
+            addErrorMessage(messageSource.getMessage(ERROR_ON_EMPTY,null, LocaleContextHolder.getLocale()));
         }
         return getAfterDeleteOutcome();
     }
@@ -118,14 +100,14 @@ public abstract class EditManagedBean<T extends Persistable<ID> & IIdable<ID>, I
         context.getExternalContext().getFlash().setKeepMessages(true);
         try {
             selected = getRepository().saveAndFlush(selected);
-            addInfoMessage(MessageFormat.format("{0}{1}", msg.getProperty(INFO_ON_SAVE), selected.getId()));
+            addInfoMessage(MessageFormat.format("{0}{1}",messageSource.getMessage(INFO_ON_SAVE,null, LocaleContextHolder.getLocale()), selected.getId()));
         } catch (NestedRuntimeException e) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, ERROR_ON_SAVE, e);
-            addErrorMessage(msg.getProperty(ERROR_ON_SAVE), e.getRootCause());
+            addErrorMessage(messageSource.getMessage(ERROR_ON_SAVE,null, LocaleContextHolder.getLocale()), e.getRootCause());
             return null;
         } catch (Exception e) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, ERROR_ON_SAVE, e);
-            addErrorMessage(msg.getProperty(ERROR_ON_SAVE), MoreObjects.firstNonNull(e.getCause(), e));
+            addErrorMessage(messageSource.getMessage(ERROR_ON_SAVE,null, LocaleContextHolder.getLocale()), MoreObjects.firstNonNull(e.getCause(), e));
             return null;
         }
         Map<String,String>params = ImmutableMap.of("faces-redirect","true",idParameterName,stringFromId(selected.getId()));

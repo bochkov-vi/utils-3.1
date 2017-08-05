@@ -1,13 +1,12 @@
 package jsf.util3;
 
 import jsf.util3.service.JsfEntityService;
-import org.entity3.IIdable;
 import org.springframework.data.domain.Persistable;
 
 import java.io.Serializable;
 import java.util.Map;
 
-public interface IEditManagedBean<T extends Persistable<ID> & IIdable<ID>, ID extends Serializable>  extends JsfEntityService<T,ID>{
+public interface IEditManagedBean<T extends Persistable<ID>, ID extends Serializable>  extends JsfEntityService<T,ID>{
     String prepareCreate();
 
     String prepareEdit(T entity);

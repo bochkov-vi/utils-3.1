@@ -5,20 +5,24 @@
  */
 package org.entity3.service.impl;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.entity3.repository.CustomRepository;
 import org.entity3.repository.MultiSelection;
 import org.entity3.repository.PropertySelection;
+import org.entity3.repository.UniqueNamedRepository;
 import org.entity3.service.EntityService;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.domain.Specifications;
+import org.springframework.data.util.ClassTypeInformation;
+import org.springframework.data.util.TypeInformation;
 
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.Path;
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,7 +33,8 @@ import java.util.List;
  * @author viktor
  */
 
-public abstract class UnTransactioanalEntityServiceImpl<T, ID extends Serializable> implements EntityService<T, ID> {
+public abstract class UnTransactioanalEntityServiceImpl<T, ID extends Serializable> extends EntityServiceUtils implements EntityService<T, ID> {
+
     public static int MAX_MASKED_RESULT = 10;
 
     protected Class<T> entityClass;
@@ -38,87 +43,35 @@ public abstract class UnTransactioanalEntityServiceImpl<T, ID extends Serializab
 
 
     public UnTransactioanalEntityServiceImpl() {
-        entityClass = ((Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
+        entityClass =argument(this,0);
     }
 
-    public UnTransactioanalEntityServiceImpl(Class<T> entityClass) {
-        this.entityClass = entityClass;
-    }
 
     public UnTransactioanalEntityServiceImpl(String... maskedProperty) {
         this();
         this.maskedPopertyList = ImmutableList.copyOf(maskedProperty);
     }
-
-    public UnTransactioanalEntityServiceImpl(Class<T> entityClass, String... maskedProperty) {
-        this.entityClass = entityClass;
-        maskedPopertyList = ImmutableList.copyOf(maskedProperty);
+    public UnTransactioanalEntityServiceImpl(Iterable<String>maskedProperties) {
+        this();
+        this.maskedPopertyList = ImmutableList.copyOf(maskedProperties);
     }
 
-    public UnTransactioanalEntityServiceImpl(Class<T> entityClass, List<String> maskedPopertyList) {
-        this.entityClass = entityClass;
-        this.maskedPopertyList = ImmutableList.copyOf(maskedPopertyList);
-    }
 
-    protected static Path createPath(From root, String path, Collection<Path> pathCache) {
-        Path result = root;
-        for (String attributeName : path.split("\\.")) {
-            if (attributeName.length() > 0) {
-                if (Persistable.class.isAssignableFrom(result.get(attributeName).getJavaType())) {
-                    result = root.join(attributeName, JoinType.LEFT);
-                } else {
-                    result = result.get(attributeName);
-                }
-                if (pathCache != null) {
-                    boolean addToCache = true;
-                    for (Path p : pathCache) {
-                        if (p.getModel().equals(result.getModel())) {
-                            result = p;
-                            addToCache = false;
-                            break;
-                        }
-                    }
-                    if (addToCache) {
-                        pathCache.add(result);
-                    }
-                }
-            }
+    public static <P> Class<P>  argument(EntityService service, int i){
+        TypeInformation<?> information = ClassTypeInformation.from(service.getClass());
+        List<TypeInformation<?>> arguments = information.getSuperTypeInformation(EntityService.class).getTypeArguments();
+
+        if (arguments.size() < i || arguments.get(i) == null) {
+            throw new IllegalArgumentException(String.format("Could not resolve id type of %s!", service.getClass()));
         }
-        return result;
+        return (Class<P>) arguments.get(i).getType();
     }
 
     protected abstract CustomRepository<T, ID> getRepository();
 
-    private Predicate createStringMaskExpression(String mask, Expression maskedProperty, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        return cb.like(maskedProperty.as(String.class), "%" + mask.trim() + "%");
-    }
-
-    protected Predicate createMaskExpression(String mask, Expression maskedProperty, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        return createStringMaskExpression(mask, maskedProperty, query, cb);
-    }
-
-    protected Specification<T> createFindByMaskSpecification(final String mask, final String maskedPopertyName, final Collection<Path> pathCache) {
-        return (root, query, cb) -> {
-            Predicate result;
-            Path maskedProperty = createPath(root, maskedPopertyName, pathCache);
-            result = createMaskExpression(mask, maskedProperty, query, cb);
-            if (result != null) {
-                List<Order> orders;
-                if (query.getOrderList() == null) {
-                    orders = ImmutableList.of();
-                } else {
-                    orders = ImmutableList.copyOf(query.getOrderList());
-                }
-                orders = ImmutableList.<Order>builder().add(cb.asc(cb.locate(maskedProperty, mask)), cb.asc(maskedProperty.isNull()), cb.asc(cb.length(maskedProperty)), cb.asc(maskedProperty)).addAll(orders).build();
-                query.orderBy(orders);
-            }
-            return result;
-        };
-    }
-
 
     public List<T> findByMask(String mask) {
-        Specification where = createFindByMaskSpecification(mask, Lists.<Path>newArrayList());
+        Specification where = createFindByMaskSpecification(mask, this.maskedPopertyList,Lists.<Path>newArrayList());
         if (where != null) {
             return getRepository().findAll(where, MAX_MASKED_RESULT);
         }
@@ -127,7 +80,7 @@ public abstract class UnTransactioanalEntityServiceImpl<T, ID extends Serializab
 
 
     public List<ID> findIdByMask(String mask) {
-        Specification where = createFindByMaskSpecification(mask, Lists.<Path>newArrayList());
+        Specification where = createFindByMaskSpecification(mask,this.maskedPopertyList, Lists.<Path>newArrayList());
         return getRepository().findAllId(MAX_MASKED_RESULT);
     }
 
@@ -166,33 +119,11 @@ public abstract class UnTransactioanalEntityServiceImpl<T, ID extends Serializab
     }
 
 
-    protected Specification<T> createFindByMaskSpecification(final String mask, Collection<Path> pathCashe) {
+    /*protected Specification<T> createFindByMaskSpecification(final String mask, Collection<Path> pathCashe) {
         return createFindByMaskSpecification(mask, this.maskedPopertyList, pathCashe);
-    }
+    }*/
 
-    protected <P> PropertySelection<P> createPropertySelection(final String propertyPath, final Collection<Path> pathCashe) {
-        return createPropertySelection(propertyPath, true, pathCashe);
-    }
 
-    protected <P> PropertySelection<P> createPropertySelection(final String propertyPath, boolean distinct, final Collection<Path> pathCashe) {
-        return (root, query, cb) -> {
-            query.distinct(distinct);
-            return createPath(root, propertyPath, pathCashe);
-        };
-    }
-
-    protected Specification<T> createFindByMaskSpecification(final String mask, Iterable<String> maskedPoperties, Collection<Path> pathCashe) {
-        Specifications<T> where = null;
-        for (String propertyName : MoreObjects.firstNonNull(maskedPoperties, ImmutableList.<String>of())) {
-            Specification<T> spec = createFindByMaskSpecification(mask, propertyName, pathCashe);
-            if (where == null) {
-                where = Specifications.where(spec);
-            } else {
-                where = where.or(spec);
-            }
-        }
-        return where;
-    }
 
     @Override
     public T findOne(Specification<T> spec, Sort sort) {
@@ -492,5 +423,15 @@ public abstract class UnTransactioanalEntityServiceImpl<T, ID extends Serializab
     @Override
     public <P> P findOne(PropertySelection<P> selection, Specification<T> spec, Sort sort) {
         return getRepository().findOne(selection, spec, sort);
+    }
+
+    public T findByName(String name) {
+        UniqueNamedRepository repository = (UniqueNamedRepository) getRepository();
+        return (T) repository.findByName(name);
+    }
+
+    public List<T> findByNameStartingWith(String name) {
+        UniqueNamedRepository repository = (UniqueNamedRepository) getRepository();
+        return  repository.findByNameStartingWith(name);
     }
 }
