@@ -31,13 +31,13 @@ public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID, 
 
     @Override
     public List<T> findByMaskAndEmptyChilds(String mask) {
-        return findAll(Specifications.where(EntityServiceUtils.<T>createFindByMaskSpecification(mask,this.maskedPopertyList, Lists.newArrayList()))
+        return findAll(Specifications.where(createFindByMaskSpecification(mask,this.maskedPopertyList, Lists.newArrayList()))
                 .and(HierarchicalServiceUtils.<T>createEmptyChildsSpecification()));
     }
 
     @Override
     public List<T> findByMaskAndEmptyParents(String mask) {
-        return findAll(Specifications.where(EntityServiceUtils.<T>createFindByMaskSpecification(mask,this.maskedPopertyList, Lists.newArrayList()))
+        return findAll(Specifications.where(createFindByMaskSpecification(mask,this.maskedPopertyList, Lists.newArrayList()))
                 .and(HierarchicalServiceUtils.<T>createEmptyParentsSpecification()));
     }
 

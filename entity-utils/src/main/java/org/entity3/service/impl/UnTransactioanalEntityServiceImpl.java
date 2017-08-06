@@ -6,6 +6,7 @@
 package org.entity3.service.impl;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.entity3.repository.CustomRepository;
 import org.entity3.repository.MultiSelection;
@@ -43,7 +44,7 @@ public abstract class UnTransactioanalEntityServiceImpl<T, ID extends Serializab
 
 
     public UnTransactioanalEntityServiceImpl() {
-        entityClass =argument(this,0);
+        entityClass =EntityServiceUtils.argument(this,0);
     }
 
 
@@ -57,21 +58,13 @@ public abstract class UnTransactioanalEntityServiceImpl<T, ID extends Serializab
     }
 
 
-    public static <P> Class<P>  argument(EntityService service, int i){
-        TypeInformation<?> information = ClassTypeInformation.from(service.getClass());
-        List<TypeInformation<?>> arguments = information.getSuperTypeInformation(EntityService.class).getTypeArguments();
 
-        if (arguments.size() < i || arguments.get(i) == null) {
-            throw new IllegalArgumentException(String.format("Could not resolve id type of %s!", service.getClass()));
-        }
-        return (Class<P>) arguments.get(i).getType();
-    }
 
     protected abstract CustomRepository<T, ID> getRepository();
 
 
     public List<T> findByMask(String mask) {
-        Specification where = createFindByMaskSpecification(mask, this.maskedPopertyList,Lists.<Path>newArrayList());
+        Specification where = createFindByMaskSpecification(mask, Lists.<Path>newArrayList());
         if (where != null) {
             return getRepository().findAll(where, MAX_MASKED_RESULT);
         }
@@ -80,7 +73,7 @@ public abstract class UnTransactioanalEntityServiceImpl<T, ID extends Serializab
 
 
     public List<ID> findIdByMask(String mask) {
-        Specification where = createFindByMaskSpecification(mask,this.maskedPopertyList, Lists.<Path>newArrayList());
+        Specification where = createFindByMaskSpecification(mask, Lists.<Path>newArrayList());
         return getRepository().findAllId(MAX_MASKED_RESULT);
     }
 
@@ -88,7 +81,7 @@ public abstract class UnTransactioanalEntityServiceImpl<T, ID extends Serializab
     public <P> List<P> findPropertyByMask(String propertyPath, String mask) {
         Collection<Path> pathCashe = Lists.<Path>newArrayList();
         Specification where = createFindByMaskSpecification(mask, propertyPath, pathCashe);
-        return getRepository().<P>findAll(this.<P>createPropertySelection(propertyPath, pathCashe), where, MAX_MASKED_RESULT);
+        return getRepository().<P>findAll(createPropertySelection(propertyPath, pathCashe), where, MAX_MASKED_RESULT);
     }
 
 
@@ -98,14 +91,14 @@ public abstract class UnTransactioanalEntityServiceImpl<T, ID extends Serializab
         if (additionSpecification != null) {
             where = where.and(additionSpecification);
         }
-        return getRepository().<P>findAll(this.<P>createPropertySelection(propertyPath, pathCashe), where, MAX_MASKED_RESULT);
+        return getRepository().<P>findAll(createPropertySelection(propertyPath, pathCashe), where, MAX_MASKED_RESULT);
     }
 
 
     public <P> List<P> findPropertyByMask(String propertyPath, String mask, String... maskedProperties) {
         List<Path> pathCache = Lists.newArrayList();
         Specifications where = Specifications.where(createFindByMaskSpecification(mask, Lists.newArrayList(maskedProperties), pathCache));
-        return getRepository().<P>findAll(this.<P>createPropertySelection(propertyPath, pathCache), where, MAX_MASKED_RESULT);
+        return getRepository().<P>findAll(createPropertySelection(propertyPath, pathCache), where, MAX_MASKED_RESULT);
     }
 
 
@@ -115,13 +108,25 @@ public abstract class UnTransactioanalEntityServiceImpl<T, ID extends Serializab
         if (additionSpecification != null) {
             where = where.and(additionSpecification);
         }
-        return getRepository().<P>findAll(this.<P>createPropertySelection(propertyPath, pathCache), where, MAX_MASKED_RESULT);
+        return getRepository().<P>findAll(createPropertySelection(propertyPath, pathCache), where, MAX_MASKED_RESULT);
+    }
+
+    protected  <P> PropertySelection<P> createPropertySelection(String propertyPath, Collection<Path> pathCache) {
+        return propertySelection(propertyPath,pathCache);
     }
 
 
-    /*protected Specification<T> createFindByMaskSpecification(final String mask, Collection<Path> pathCashe) {
-        return createFindByMaskSpecification(mask, this.maskedPopertyList, pathCashe);
-    }*/
+    protected Specification<T> createFindByMaskSpecification(final String mask, Iterable<String> maskedProperties, Collection<Path> pathCashe) {
+        return maskSpecification(mask, this.maskedPopertyList, pathCashe);
+    }
+    protected Specification<T> createFindByMaskSpecification(final String mask, String maskedProperty, Collection<Path> pathCashe) {
+        return maskSpecification(mask, maskedProperty, pathCashe);
+    }
+
+    protected Specification<T> createFindByMaskSpecification(final String mask,  Collection<Path> pathCashe) {
+        return maskSpecification(mask, maskedPopertyList, pathCashe);
+    }
+
 
 
 

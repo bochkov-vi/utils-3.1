@@ -6,6 +6,7 @@ import jsf.util3.EditManagedBean;
 import jsf.util3.JsfUtil;
 import jsf.util3.service.JsfEntityService;
 import org.entity3.service.impl.EntityServiceImpl;
+import org.entity3.service.impl.EntityServiceUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -46,17 +47,23 @@ public abstract class JsfEntityServiceImpl<T extends Persistable<ID>, ID extends
 
     public JsfEntityServiceImpl() {
         super();
-        idClass=argument(this,1);
+        idClass=EntityServiceUtils.argument(this,1);
+        initIdParameterName();
     }
 
     public JsfEntityServiceImpl(String... maskedProperty) {
         super(maskedProperty);
-        idClass=argument(this,1);
+        idClass= EntityServiceUtils.argument(this,1);
+        initIdParameterName();
     }
 
     public JsfEntityServiceImpl(String idParameterName, Iterable<String> maskedProperty) {
         super(maskedProperty);
         this.idParameterName = idParameterName;
+    }
+
+    protected void initIdParameterName(){
+        idParameterName = entityClass.getSimpleName()+"_id";
     }
 
     @Override
@@ -66,7 +73,6 @@ public abstract class JsfEntityServiceImpl<T extends Persistable<ID>, ID extends
         if (selected != null) {
             try {
                 getRepository().delete(selected);
-                selected = null;
             } catch (Exception e) {
                 JsfUtil.addErrorMessage(messageSource.getMessage(ERROR_ON_DELETE,null, LocaleContextHolder.getLocale()), ((NestedRuntimeException) e).getRootCause());
             }

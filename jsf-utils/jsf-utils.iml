@@ -17,6 +17,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="coordinate-converters" />
+    <orderEntry type="module" module-name="coordinate-converters" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.primefaces:primefaces:5.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.data:spring-data-jpa:1.10.6.RELEASE" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.data:spring-data-commons:1.12.6.RELEASE" level="project" />

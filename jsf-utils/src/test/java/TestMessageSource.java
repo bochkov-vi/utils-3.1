@@ -18,6 +18,6 @@ public class TestMessageSource {
 
     @Test
     public void testInit() {
-        System.out.println(messageSource.getMessage(JsfHierarchicalEntityService.CIRCLE_ERROR_MESSAGE, null, Locale.US));
+        System.out.println(messageSource.getMessage(JsfHierarchicalEntityService.CIRCLE_ERROR_MESSAGE, null, Locale.getDefault()));
     }
 }
