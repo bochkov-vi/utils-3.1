@@ -12,7 +12,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.criteria.Expression;
 import java.io.Serializable;
 import java.util.List;
 
@@ -27,12 +26,20 @@ public abstract class EntityServiceImpl<T, ID extends Serializable> extends UnTr
         super();
     }
 
+    public EntityServiceImpl(Class<T> entityClass) {
+        super(entityClass);
+    }
+
     public EntityServiceImpl(String... maskedProperty) {
         super(maskedProperty);
     }
 
-    public EntityServiceImpl(Iterable<String> maskedProperties) {
-        super(maskedProperties);
+    public EntityServiceImpl(Class<T> entityClass, String... maskedProperty) {
+        super(entityClass, maskedProperty);
+    }
+
+    public EntityServiceImpl(Class<T> entityClass, List<String> maskedPopertyList) {
+        super(entityClass, maskedPopertyList);
     }
 
     @Transactional
@@ -249,17 +256,8 @@ public abstract class EntityServiceImpl<T, ID extends Serializable> extends UnTr
         return super.findPropertyByMask(propertyPath, mask, maskedProperties);
     }
 
-
-    public T findLastModified() {
-        return getRepository().findOne(createLastModifiedSpecification());
-    }
-
-    protected Specification<T> createLastModifiedSpecification() {
-        return (root, query, cb) -> {
-            Expression e = root.get("lastModifiedDate");
-            Expression e2 = root.get("createdDate");
-            query.orderBy(cb.desc(e), cb.desc(e2));
-            return query.getRestriction();
-        };
+    @Override
+    public T refresh(T entity) {
+        return getRepository().refresh(entity);
     }
 }

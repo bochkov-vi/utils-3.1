@@ -274,4 +274,14 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
         return findAll(selection, spec, sort, null);
     }
 
+    @Override
+    public T refresh(T entity) {
+        if (entity != null) {
+            ID id = entityInformation.getId(entity);
+            entity = findOne(id);
+            em.refresh(entity);
+            return entity;
+        }
+        return null;
+    }
 }
