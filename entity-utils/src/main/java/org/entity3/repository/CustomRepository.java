@@ -16,7 +16,7 @@ import java.io.Serializable;
  * @author bochkov
  */
 
-public interface CustomRepository<T, ID extends Serializable> extends JpaRepository<T, ID>, JpaSpecificationExecutor<T>, LimitedRepository<T, ID>, PropertySelectionRepository<T,ID>,MultiSelectionRepository<T,ID> {
+public interface CustomRepository<T, ID extends Serializable> extends JpaRepository<T, ID>, JpaSpecificationExecutor<T>, LimitedRepository<T, ID>, PropertySelectionRepository<T,ID>,MultiSelectionRepository<T,ID>,RefreshableRepository<T> {
 
 
 }

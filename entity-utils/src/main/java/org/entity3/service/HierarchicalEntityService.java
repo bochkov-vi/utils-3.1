@@ -6,6 +6,7 @@
 package org.entity3.service;
 
 import org.entity3.IHierarchical;
+import org.springframework.data.domain.Auditable;
 
 import java.io.Serializable;
 import java.util.List;
@@ -13,13 +14,12 @@ import java.util.List;
 /**
  * @author viktor
  */
-public interface HierarchicalEntityService<T extends IHierarchical, ID extends Serializable> extends AuditableEntityService<T, ID> {
+public interface HierarchicalEntityService<T extends IHierarchical<ID,T> & Auditable<?, ID>, ID extends Serializable> extends AuditableEntityService<T, ID> {
+    public List<T> findByEmptyParents();
 
-    List<T> findByEmptyParents();
+    public List<T> findByEmptyChilds();
 
-    List<T> findByEmptyChilds();
+    public List<T> findByMaskAndEmptyChilds(String mask);
 
-    List<T> findByMaskAndEmptyChilds(String mask);
-
-    List<T> findByMaskAndEmptyParents(String mask);
+    public List<T> findByMaskAndEmptyParents(String mask);
 }

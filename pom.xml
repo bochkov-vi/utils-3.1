@@ -6,7 +6,7 @@
 
     <groupId>com.bochkov</groupId>
     <artifactId>utils</artifactId>
-    <version>3.1</version>
+    <version>3.0</version>
     <modules>
         <module>jsf-utils</module>
         <module>entity-utils</module>
