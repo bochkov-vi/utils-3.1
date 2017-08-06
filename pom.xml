@@ -6,7 +6,7 @@
 
     <groupId>com.bochkov</groupId>
     <artifactId>utils</artifactId>
-    <version>3.0</version>
+    <version>3.1</version>
     <modules>
         <module>jsf-utils</module>
         <module>entity-utils</module>
@@ -27,6 +27,19 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>
