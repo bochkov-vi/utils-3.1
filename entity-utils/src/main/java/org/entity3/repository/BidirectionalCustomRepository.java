@@ -3,10 +3,7 @@ package org.entity3.repository;
 import com.google.common.base.Objects;
 import com.google.common.base.Predicates;
 import com.google.common.base.Strings;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
@@ -59,7 +56,7 @@ public class BidirectionalCustomRepository<T extends Persistable<ID>, ID extends
                 mappedBy = Iterables.getFirst(Iterables.transform((Iterables.<Attribute>filter(metamodel.managedType(((Bindable) direct)
                         .getBindableJavaType()).getAttributes(), attribute ->
                         ((Bindable) attribute).getBindableJavaType().equals(currentClass) &&
-                                direct.getName().equals(extractMappedBy(attribute)))), attribute -> ((Attribute)attribute).getName()), null);
+                                direct.getName().equals(extractMappedBy(attribute)))), attribute -> ((Attribute) attribute).getName()), null);
             }
 
 
@@ -181,6 +178,7 @@ public class BidirectionalCustomRepository<T extends Persistable<ID>, ID extends
     }
 
     static class BiDirect<T extends Persistable> {
+
         Attribute directAttribute;
 
         Attribute inverseAttribute;
@@ -196,7 +194,11 @@ public class BidirectionalCustomRepository<T extends Persistable<ID>, ID extends
             if (directAttribute.isCollection()) {
                 return (Collection) value;
             } else {
-                return Lists.newArrayList(value);
+                if (value != null) {
+                    return Lists.newArrayList(value);
+                } else {
+                    return ImmutableList.of();
+                }
             }
         }
 
