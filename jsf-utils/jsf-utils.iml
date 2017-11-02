@@ -17,7 +17,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: com.bochkov:coordinate-converters:3.1" level="project" />
-    <orderEntry type="library" name="Maven: com.bochkov:entity-utils:3.1" level="project" />
     <orderEntry type="module" module-name="coordinate-converters" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.primefaces:primefaces:5.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.data:spring-data-jpa:1.10.6.RELEASE" level="project" />
