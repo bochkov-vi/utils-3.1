@@ -35,7 +35,6 @@ public class TimeZoneProviderImpl implements TimeZoneProvider {
         return getTimeZone().getID();
     }
 
-    @Value("Asia/Kamchatka")
     public void setTimeZoneId(String id) {
         try {
             setTimeZone(TimeZone.getTimeZone(id));
