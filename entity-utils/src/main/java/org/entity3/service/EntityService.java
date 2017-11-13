@@ -17,7 +17,7 @@ import java.util.List;
  */
 
 
-public interface EntityService<T, ID extends Serializable>  extends CustomRepository<T,ID> {
+public interface EntityService<T, ID extends Serializable>  extends CustomRepository<T,ID> ,Serializable {
     public List<T> findByMask(String mask);
 
     public List<ID> findIdByMask(String mask);

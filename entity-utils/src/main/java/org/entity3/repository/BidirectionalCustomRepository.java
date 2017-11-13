@@ -15,17 +15,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.Bindable;
-import javax.persistence.metamodel.ManagedType;
-import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.*;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by bochkov on 16.03.17.
@@ -190,16 +185,17 @@ public class BidirectionalCustomRepository<T extends Persistable<ID>, ID extends
         }
 
         public Collection directeRefs(Object entity) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-            Object value = PropertyUtils.getProperty(entity, directAttribute.getName());
-            if (directAttribute.isCollection()) {
-                return (Collection) value;
-            } else {
-                if (value != null) {
-                    return Lists.newArrayList(value);
+            if (entity != null) {
+                Object value = PropertyUtils.getProperty(entity, directAttribute.getName());
+                if (directAttribute.isCollection()) {
+                    return (Collection) value;
                 } else {
-                    return ImmutableList.of();
+                    if (value != null) {
+                        return Lists.newArrayList(value);
+                    }
                 }
             }
+            return ImmutableList.of();
         }
 
         public void putRefToChild(Collection childs, Object ref) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
@@ -216,11 +212,32 @@ public class BidirectionalCustomRepository<T extends Persistable<ID>, ID extends
                     putRefToChild((Collection) child, ref);
                 } else {
                     if (inverseAttribute.isCollection()) {
+                        PluralAttribute collectionAttribute = (PluralAttribute) inverseAttribute;
                         Collection inverseCollection = (Collection) PropertyUtils.getProperty(child, inverseAttribute.getName());
                         if (inverseCollection == null) {
-                            inverseCollection = (Collection) inverseAttribute.getJavaType().getConstructor().newInstance();
+                            Constructor constructor = null;
+                            if (inverseAttribute.getJavaType().isInterface()) {
+                                PluralAttribute.CollectionType collectionType = collectionAttribute.getCollectionType();
+                                switch (collectionType) {
+                                    case MAP: {
+                                        constructor = HashMap.class.getConstructor();
+                                        break;
+                                    }
+                                    case SET: {
+                                        constructor = HashSet.class.getConstructor();
+                                        break;
+                                    }
+                                    default: {
+                                        constructor = ArrayList.class.getConstructor();
+                                        break;
+                                    }
+                                }
+                            } else {
+                                constructor = inverseAttribute.getJavaType().getConstructor();
+                            }
+                            inverseCollection = (Collection) constructor.newInstance();
                         }
-                        if (!inverseCollection.contains(ref)) {
+                        if (inverseCollection != null && !inverseCollection.contains(ref)) {
                             inverseCollection.add(ref);
                         }
                     } else {

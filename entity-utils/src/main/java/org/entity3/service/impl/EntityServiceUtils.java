@@ -79,9 +79,9 @@ public class EntityServiceUtils {
         };
     }
 
-    static public <T> Specification<T> maskSpecification(final String mask, Iterable<String> maskedPoperties, Collection<Path> pathCashe) {
+    static public <T> Specification<T> maskSpecification(final String mask, String[] maskedPoperties, Collection<Path> pathCashe) {
         Specifications<T> where = null;
-        for (String propertyName : MoreObjects.firstNonNull(maskedPoperties, ImmutableList.<String>of())) {
+        for (String propertyName : MoreObjects.firstNonNull(maskedPoperties, new String[0])) {
             Specification<T> spec = maskSpecification(mask, propertyName, pathCashe);
             if (where == null) {
                 where = Specifications.where(spec);
