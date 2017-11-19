@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import jsf.util3.EditManagedBean;
 import jsf.util3.JsfUtil;
 import jsf.util3.service.JsfEntityService;
+import org.entity3.IIdable;
 import org.entity3.service.impl.EntityServiceImpl;
 import org.entity3.service.impl.EntityServiceUtils;
 import org.springframework.beans.BeanUtils;
@@ -33,7 +34,7 @@ import static jsf.util3.JsfUtil.addInfoMessage;
  * Created by bochkov on 13.06.17.
  */
 @Configurable
-public abstract class JsfEntityServiceImpl<T extends Persistable<ID>, ID extends Serializable>
+public abstract class JsfEntityServiceImpl<T extends IIdable<ID>, ID extends Serializable>
         extends EntityServiceImpl<T, ID> implements JsfEntityService<T, ID> {
 
     @Autowired
@@ -47,13 +48,13 @@ public abstract class JsfEntityServiceImpl<T extends Persistable<ID>, ID extends
 
     public JsfEntityServiceImpl() {
         super();
-        idClass=EntityServiceUtils.argument(this,1);
+        idClass = EntityServiceUtils.argument(this, 1);
         initIdParameterName();
     }
 
     public JsfEntityServiceImpl(String... maskedProperty) {
         super(maskedProperty);
-        idClass= EntityServiceUtils.argument(this,1);
+        idClass = EntityServiceUtils.argument(this, 1);
         initIdParameterName();
     }
 
@@ -62,8 +63,8 @@ public abstract class JsfEntityServiceImpl<T extends Persistable<ID>, ID extends
         this.idParameterName = idParameterName;
     }
 
-    protected void initIdParameterName(){
-        idParameterName = entityClass.getSimpleName()+"_id";
+    protected void initIdParameterName() {
+        idParameterName = entityClass.getSimpleName() + "_id";
     }
 
     @Override
@@ -74,10 +75,10 @@ public abstract class JsfEntityServiceImpl<T extends Persistable<ID>, ID extends
             try {
                 getRepository().delete(selected);
             } catch (Exception e) {
-                JsfUtil.addErrorMessage(messageSource.getMessage(ERROR_ON_DELETE,null, LocaleContextHolder.getLocale()), ((NestedRuntimeException) e).getRootCause());
+                JsfUtil.addErrorMessage(messageSource.getMessage(ERROR_ON_DELETE, null, LocaleContextHolder.getLocale()), ((NestedRuntimeException) e).getRootCause());
             }
         } else {
-            addErrorMessage(messageSource.getMessage(ERROR_ON_EMPTY,null, LocaleContextHolder.getLocale()));
+            addErrorMessage(messageSource.getMessage(ERROR_ON_EMPTY, null, LocaleContextHolder.getLocale()));
         }
     }
 
@@ -87,13 +88,13 @@ public abstract class JsfEntityServiceImpl<T extends Persistable<ID>, ID extends
         context.getExternalContext().getFlash().setKeepMessages(true);
         try {
             selected = getRepository().saveAndFlush(selected);
-            addInfoMessage(MessageFormat.format("{0}{1}", messageSource.getMessage(INFO_ON_SAVE,null, LocaleContextHolder.getLocale()), selected.getId()));
+            addInfoMessage(MessageFormat.format("{0}{1}", messageSource.getMessage(INFO_ON_SAVE, null, LocaleContextHolder.getLocale()), selected.getId()));
         } catch (NestedRuntimeException e) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, messageSource.getMessage(ERROR_ON_SAVE,null, LocaleContextHolder.getLocale()), e);
-            addErrorMessage( messageSource.getMessage(ERROR_ON_SAVE,null, LocaleContextHolder.getLocale()), e.getRootCause());
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, messageSource.getMessage(ERROR_ON_SAVE, null, LocaleContextHolder.getLocale()), e);
+            addErrorMessage(messageSource.getMessage(ERROR_ON_SAVE, null, LocaleContextHolder.getLocale()), e.getRootCause());
         } catch (Exception e) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, ERROR_ON_SAVE, e);
-            addErrorMessage( messageSource.getMessage(ERROR_ON_SAVE,null, LocaleContextHolder.getLocale()), MoreObjects.firstNonNull(e.getCause(), e));
+            addErrorMessage(messageSource.getMessage(ERROR_ON_SAVE, null, LocaleContextHolder.getLocale()), MoreObjects.firstNonNull(e.getCause(), e));
         }
         return selected;
     }
@@ -141,6 +142,20 @@ public abstract class JsfEntityServiceImpl<T extends Persistable<ID>, ID extends
         return convert(value);
     }
 
+    @Override
+    public T asObject(Object id) {
+        if (id != null) {
+            if (id.getClass().isAssignableFrom(entityClass)) {
+                return (T) id;
+            } else if (id.getClass().isAssignableFrom(idClass)) {
+                return getRepository().findOne((ID) id);
+            } else {
+                return convert(String.valueOf(id));
+            }
+
+        }
+        return null;
+    }
 
     @Override
     public String getAsString(FacesContext facesContext, UIComponent uiComponent, Object o) {

@@ -59,18 +59,25 @@ public abstract class UnTransactioanalEntityServiceImpl<T, ID extends Serializab
     protected abstract CustomRepository<T, ID> getRepository();
 
 
-    public List<T> findByMask(String mask) {
+    public List<T> findByMask(String mask, int limit) {
         Specification where = createFindByMaskSpecification(mask, Lists.<Path>newArrayList());
         if (where != null) {
-            return getRepository().findAll(where, MAX_MASKED_RESULT);
+            return getRepository().findAll(where, limit);
         }
-        return getRepository().findAll(MAX_MASKED_RESULT);
+        return getRepository().findAll(limit);
     }
 
+    public List<T> findByMask(String mask) {
+        return findByMask(mask, MAX_MASKED_RESULT);
+    }
 
     public List<ID> findIdByMask(String mask) {
+        return findIdByMask(mask, MAX_MASKED_RESULT);
+    }
+
+    public List<ID> findIdByMask(String mask, int limit) {
         Specification where = createFindByMaskSpecification(mask, Lists.<Path>newArrayList());
-        return getRepository().findAllId(MAX_MASKED_RESULT);
+        return getRepository().findAllId(limit);
     }
 
 

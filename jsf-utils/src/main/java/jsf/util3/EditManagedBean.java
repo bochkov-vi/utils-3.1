@@ -10,6 +10,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import jsf.util3.service.impl.JsfEntityServiceImpl;
+import org.entity3.IIdable;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.data.domain.Persistable;
@@ -29,7 +30,7 @@ import static jsf.util3.JsfUtil.addInfoMessage;
  * @param <T>
  * @author viktor
  */
-public abstract class EditManagedBean<T extends Persistable<ID> , ID extends Serializable> extends JsfEntityServiceImpl<T, ID> implements IEditManagedBean<T, ID> {
+public abstract class EditManagedBean<T extends IIdable<ID> & Persistable<ID>, ID extends Serializable> extends JsfEntityServiceImpl<T, ID> implements IEditManagedBean<T, ID> {
 
 
     protected T selected;

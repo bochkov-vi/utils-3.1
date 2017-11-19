@@ -1,5 +1,6 @@
 package jsf.util3.service;
 
+import org.entity3.IIdable;
 import org.entity3.service.EntityService;
 import org.springframework.data.domain.Persistable;
 
@@ -10,7 +11,7 @@ import java.io.Serializable;
 /**
  * Created by bochkov on 02.07.17.
  */
-public interface JsfEntityService<T extends Persistable<ID> , ID extends Serializable> extends Converter, org.springframework.core.convert.converter.Converter<String, T>,EntityService<T,ID> {
+public interface JsfEntityService<T extends IIdable<ID>, ID extends Serializable> extends Converter, org.springframework.core.convert.converter.Converter<String, T>,EntityService<T,ID> {
     public static  String ERROR_ON_SAVE = "errorOnSave";
     public static String ERROR_ON_DELETE = "errorOnDelete";
     public static String ERROR_ON_EMPTY = "errorOnEmptySelected";
@@ -24,6 +25,8 @@ public interface JsfEntityService<T extends Persistable<ID> , ID extends Seriali
     T createNewInstance();
 
     String getIdParameterName();
+
+    T asObject(Object id);
 
     ID idFromString(String s) throws RuntimeException;
 

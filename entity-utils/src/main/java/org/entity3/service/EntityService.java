@@ -17,10 +17,15 @@ import java.util.List;
  */
 
 
-public interface EntityService<T, ID extends Serializable>  extends CustomRepository<T,ID> ,Serializable {
+public interface EntityService<T, ID extends Serializable> extends CustomRepository<T, ID>, Serializable {
+
     public List<T> findByMask(String mask);
 
     public List<ID> findIdByMask(String mask);
+
+    public List<T> findByMask(String mask, int limit);
+
+    public List<ID> findIdByMask(String mask, int limit);
 
     public <P> List<P> findPropertyByMask(String property, String mask);
 

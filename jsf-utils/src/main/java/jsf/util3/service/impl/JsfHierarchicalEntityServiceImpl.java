@@ -5,17 +5,16 @@ import com.google.common.collect.Lists;
 import jsf.util3.JsfUtil;
 import jsf.util3.service.JsfHierarchicalEntityService;
 import org.entity3.IHierarchical;
-import org.entity3.service.impl.EntityServiceUtils;
+import org.entity3.IIdable;
 import org.entity3.service.impl.HierarchicalServiceUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.data.domain.Persistable;
 import org.springframework.data.jpa.domain.Specifications;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 
-public abstract class JsfHierarchicalEntityServiceImpl<T extends Persistable<ID> & IHierarchical, ID extends Serializable> extends JsfEntityServiceImpl<T, ID> implements JsfHierarchicalEntityService<T, ID> {
+public abstract class JsfHierarchicalEntityServiceImpl<T extends IIdable<ID> & IHierarchical<ID, T>, ID extends Serializable> extends JsfEntityServiceImpl<T, ID> implements JsfHierarchicalEntityService<T, ID> {
 
     public JsfHierarchicalEntityServiceImpl() {
         super();
@@ -31,13 +30,13 @@ public abstract class JsfHierarchicalEntityServiceImpl<T extends Persistable<ID>
 
     @Override
     public List<T> findByMaskAndEmptyChilds(String mask) {
-        return findAll(Specifications.where(createFindByMaskSpecification(mask, this.maskedPopertyList, Lists.newArrayList()))
+        return findAll(Specifications.where(createFindByMaskSpecification(mask, this.maskedPopertyArray, Lists.newArrayList()))
                 .and(HierarchicalServiceUtils.<T>createEmptyChildsSpecification()));
     }
 
     @Override
     public List<T> findByMaskAndEmptyParents(String mask) {
-        return findAll(Specifications.where(createFindByMaskSpecification(mask, this.maskedPopertyList, Lists.newArrayList()))
+        return findAll(Specifications.where(createFindByMaskSpecification(mask, this.maskedPopertyArray, Lists.newArrayList()))
                 .and(HierarchicalServiceUtils.<T>createEmptyParentsSpecification()));
     }
 
