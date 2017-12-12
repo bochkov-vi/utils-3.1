@@ -124,11 +124,11 @@ public abstract class UnTransactioanalEntityServiceImpl<T, ID extends Serializab
     }
 
     protected Specification<T> createFindByMaskSpecification(final String mask, String maskedProperty, Collection<Path> pathCashe) {
-        return maskSpecification(mask, maskedProperty, pathCashe);
+        return createFindByMaskSpecification(mask, new String[]{maskedProperty}, pathCashe);
     }
 
     protected Specification<T> createFindByMaskSpecification(final String mask, Collection<Path> pathCashe) {
-        return maskSpecification(mask, maskedPopertyArray, pathCashe);
+        return createFindByMaskSpecification(mask, maskedPopertyArray, pathCashe);
     }
 
 

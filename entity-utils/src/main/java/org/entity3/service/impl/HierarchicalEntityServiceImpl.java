@@ -31,24 +31,44 @@ public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID, 
 
     @Override
     public List<T> findByMaskAndEmptyChilds(String mask) {
-        return findAll(Specifications.where(createFindByMaskSpecification(mask,this.maskedPopertyArray, Lists.newArrayList()))
-                .and(HierarchicalServiceUtils.<T>createEmptyChildsSpecification()));
+        return findByMaskAndEmptyChilds(mask,MAX_MASKED_RESULT);
     }
 
     @Override
     public List<T> findByMaskAndEmptyParents(String mask) {
-        return findAll(Specifications.where(createFindByMaskSpecification(mask,this.maskedPopertyArray, Lists.newArrayList()))
-                .and(HierarchicalServiceUtils.<T>createEmptyParentsSpecification()));
+        return findByMaskAndEmptyParents(mask,MAX_MASKED_RESULT);
     }
 
     @Override
     public List<T> findByEmptyChilds() {
-        return findAll(HierarchicalServiceUtils.createEmptyChildsSpecification());
+        return findByEmptyChilds(MAX_MASKED_RESULT);
     }
 
     @Override
     public List<T> findByEmptyParents() {
-        return findAll(HierarchicalServiceUtils.createEmptyParentsSpecification());
+        return findByEmptyParents(MAX_MASKED_RESULT);
+    }
+
+    @Override
+    public List<T> findByMaskAndEmptyChilds(String mask, Integer limit) {
+        return findAll(Specifications.where(createFindByMaskSpecification(mask,this.maskedPopertyArray, Lists.newArrayList()))
+                .and(HierarchicalServiceUtils.<T>createEmptyChildsSpecification()),limit);
+    }
+
+    @Override
+    public List<T> findByMaskAndEmptyParents(String mask, Integer limit) {
+        return findAll(Specifications.where(createFindByMaskSpecification(mask,this.maskedPopertyArray, Lists.newArrayList()))
+                .and(HierarchicalServiceUtils.<T>createEmptyParentsSpecification()),limit);
+    }
+
+    @Override
+    public List<T> findByEmptyChilds(Integer limit) {
+        return findAll(HierarchicalServiceUtils.createEmptyChildsSpecification(),limit);
+    }
+
+    @Override
+    public List<T> findByEmptyParents(Integer limit) {
+        return findAll(HierarchicalServiceUtils.createEmptyParentsSpecification(),limit);
     }
 
 }

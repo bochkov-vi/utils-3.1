@@ -22,4 +22,12 @@ public interface HierarchicalEntityService<T extends IHierarchical, ID extends S
     List<T> findByMaskAndEmptyChilds(String mask);
 
     List<T> findByMaskAndEmptyParents(String mask);
+
+    List<T> findByMaskAndEmptyChilds(String mask, Integer limit);
+
+    List<T> findByMaskAndEmptyParents(String mask, Integer limit);
+
+    List<T> findByEmptyChilds(Integer limit);
+
+    List<T> findByEmptyParents(Integer limit);
 }
