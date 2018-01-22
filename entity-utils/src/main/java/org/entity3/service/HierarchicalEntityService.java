@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * @author viktor
  */
-public interface HierarchicalEntityService<T extends IHierarchical, ID extends Serializable> extends AuditableEntityService<T, ID> {
+public interface HierarchicalEntityService<T extends IHierarchical<ID, T> , ID extends Serializable> extends AuditableEntityService<T, ID> {
 
     List<T> findByEmptyParents();
 

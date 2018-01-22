@@ -60,4 +60,25 @@ public abstract class JsfHierarchicalEntityServiceImpl<T extends IIdable<ID> & I
         }
         return !result;
     }
+    @Override
+    public List<T> findByMaskAndEmptyChilds(String mask, Integer limit) {
+        return findAll(Specifications.where(createFindByMaskSpecification(mask,this.maskedPopertyArray, Lists.newArrayList()))
+                .and(HierarchicalServiceUtils.<T>createEmptyChildsSpecification()),limit);
+    }
+
+    @Override
+    public List<T> findByMaskAndEmptyParents(String mask, Integer limit) {
+        return findAll(Specifications.where(createFindByMaskSpecification(mask,this.maskedPopertyArray, Lists.newArrayList()))
+                .and(HierarchicalServiceUtils.<T>createEmptyParentsSpecification()),limit);
+    }
+
+    @Override
+    public List<T> findByEmptyChilds(Integer limit) {
+        return findAll(HierarchicalServiceUtils.createEmptyChildsSpecification(),limit);
+    }
+
+    @Override
+    public List<T> findByEmptyParents(Integer limit) {
+        return findAll(HierarchicalServiceUtils.createEmptyParentsSpecification(),limit);
+    }
 }
