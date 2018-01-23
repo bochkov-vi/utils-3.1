@@ -2,11 +2,11 @@ package jsf.util3.service.impl;
 
 import jsf.util3.service.TimeZoneProvider;
 import org.joda.time.DateTimeZone;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,6 +14,11 @@ import java.util.logging.Logger;
 @Service("timeZoneProvider")
 @Scope("session")
 public class TimeZoneProviderImpl implements TimeZoneProvider {
+
+    @PostConstruct
+    public void postConstruct() {
+        setTimeZone(TimeZone.getTimeZone("Asia/Kamchatka"));
+    }
 
     @Override
     public TimeZone getTimeZone() {
