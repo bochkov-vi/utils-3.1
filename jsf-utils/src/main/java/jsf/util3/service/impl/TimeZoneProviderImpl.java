@@ -4,9 +4,11 @@ import jsf.util3.service.TimeZoneProvider;
 import org.joda.time.DateTimeZone;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.i18n.TimeZoneAwareLocaleContext;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +19,7 @@ public class TimeZoneProviderImpl implements TimeZoneProvider {
 
     @PostConstruct
     public void postConstruct() {
-        setTimeZone(TimeZone.getTimeZone("Asia/Kamchatka"));
+        LocaleContextHolder.setDefaultTimeZone(TimeZone.getTimeZone("Asia/Kamchatka"));
     }
 
     @Override
@@ -47,4 +49,5 @@ public class TimeZoneProviderImpl implements TimeZoneProvider {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Ошибка смены TimeZone", e);
         }
     }
+
 }
