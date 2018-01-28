@@ -67,6 +67,15 @@ public abstract class UnTransactioanalEntityServiceImpl<T, ID extends Serializab
         return getRepository().findAll(limit);
     }
 
+    @Override
+    public Page<T> findByMask(String mask, Pageable pageable) {
+        Specification where = createFindByMaskSpecification(mask, Lists.<Path>newArrayList());
+        if (where != null) {
+            return getRepository().findAll(where, pageable);
+        }
+        return getRepository().findAll(pageable);
+    }
+
     public List<T> findByMask(String mask) {
         return findByMask(mask, MAX_MASKED_RESULT);
     }

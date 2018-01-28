@@ -7,6 +7,8 @@ package org.entity3.service.impl;
 import com.google.common.collect.Lists;
 import org.entity3.IHierarchical;
 import org.entity3.service.HierarchicalEntityService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specifications;
 
 import java.io.Serializable;
@@ -16,7 +18,7 @@ import java.util.List;
  * @param <T>
  * @author viktor
  */
-public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID, T> , ID extends Serializable> extends EntityServiceImpl<T, ID> implements HierarchicalEntityService<T, ID>, org.entity3.service.AuditableEntityService<T, ID> {
+public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID, T>, ID extends Serializable> extends EntityServiceImpl<T, ID> implements HierarchicalEntityService<T, ID>, org.entity3.service.AuditableEntityService<T, ID> {
 
     public HierarchicalEntityServiceImpl() {
     }
@@ -31,12 +33,12 @@ public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID, 
 
     @Override
     public List<T> findByMaskAndEmptyChilds(String mask) {
-        return findByMaskAndEmptyChilds(mask,MAX_MASKED_RESULT);
+        return findByMaskAndEmptyChilds(mask, MAX_MASKED_RESULT);
     }
 
     @Override
     public List<T> findByMaskAndEmptyParents(String mask) {
-        return findByMaskAndEmptyParents(mask,MAX_MASKED_RESULT);
+        return findByMaskAndEmptyParents(mask, MAX_MASKED_RESULT);
     }
 
     @Override
@@ -51,24 +53,34 @@ public abstract class HierarchicalEntityServiceImpl<T extends IHierarchical<ID, 
 
     @Override
     public List<T> findByMaskAndEmptyChilds(String mask, Integer limit) {
-        return findAll(Specifications.where(createFindByMaskSpecification(mask,this.maskedPopertyArray, Lists.newArrayList()))
-                .and(HierarchicalServiceUtils.<T>createEmptyChildsSpecification()),limit);
+        return findAll(Specifications.where(createFindByMaskSpecification(mask, this.maskedPopertyArray, Lists.newArrayList()))
+                .and(HierarchicalServiceUtils.<T>createEmptyChildsSpecification()), limit);
     }
 
     @Override
     public List<T> findByMaskAndEmptyParents(String mask, Integer limit) {
-        return findAll(Specifications.where(createFindByMaskSpecification(mask,this.maskedPopertyArray, Lists.newArrayList()))
-                .and(HierarchicalServiceUtils.<T>createEmptyParentsSpecification()),limit);
+        return findAll(Specifications.where(createFindByMaskSpecification(mask, this.maskedPopertyArray, Lists.newArrayList()))
+                .and(HierarchicalServiceUtils.<T>createEmptyParentsSpecification()), limit);
+    }
+
+    @Override
+    public Page<T> findByMaskAndEmptyChilds(String mask, Pageable pageable) {
+        return findAll(HierarchicalServiceUtils.createEmptyChildsSpecification(), pageable);
+    }
+
+    @Override
+    public Page<T> findByMaskAndEmptyParents(String mask, Pageable pageable) {
+        return findAll(HierarchicalServiceUtils.createEmptyParentsSpecification(), pageable);
     }
 
     @Override
     public List<T> findByEmptyChilds(Integer limit) {
-        return findAll(HierarchicalServiceUtils.createEmptyChildsSpecification(),limit);
+        return findAll(HierarchicalServiceUtils.createEmptyChildsSpecification(), limit);
     }
 
     @Override
     public List<T> findByEmptyParents(Integer limit) {
-        return findAll(HierarchicalServiceUtils.createEmptyParentsSpecification(),limit);
+        return findAll(HierarchicalServiceUtils.createEmptyParentsSpecification(), limit);
     }
 
 }

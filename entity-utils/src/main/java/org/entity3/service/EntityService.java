@@ -5,6 +5,8 @@
 package org.entity3.service;
 
 import org.entity3.repository.CustomRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.io.Serializable;
@@ -24,6 +26,8 @@ public interface EntityService<T, ID extends Serializable> extends CustomReposit
     public List<ID> findIdByMask(String mask);
 
     public List<T> findByMask(String mask, int limit);
+
+    public Page<T> findByMask(String mask, Pageable pageable);
 
     public List<ID> findIdByMask(String mask, int limit);
 
