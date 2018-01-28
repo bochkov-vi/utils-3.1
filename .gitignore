@@ -1,0 +1,9 @@
+**/.idea/**
+**/*.iml
+
+Будет удалено .idea/
+Будет удалено coordinate-converters/coordinate-converters.iml
+Будет удалено coordinate-converters/target/
+Будет удалено entity-utils/target/
+Будет удалено jsf-utils/target/
+Будет удалено wicket-jpa/src/
