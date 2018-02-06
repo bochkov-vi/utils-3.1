@@ -1,7 +1,5 @@
 package org.entity3.repository;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -18,8 +16,6 @@ public interface PropertySelectionRepository<T, ID> {
     <P> List<P> findAll(PropertySelection<P> selection, Iterable<ID> ids, Number limit);
 
     <P> List<P> findAll(PropertySelection<P> selection, Specification<T> spec, Sort sort, Number limit);
-
-    <P> Page<P> findAll(PropertySelection<P> selection, Specification<T> spec, Pageable pageable);
 
     <P> List<P> findAll(PropertySelection<P> selection, Specification<T> spec);
 

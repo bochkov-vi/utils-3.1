@@ -7,9 +7,6 @@ package org.entity3.repository;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
@@ -21,7 +18,6 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import static org.springframework.data.jpa.repository.query.QueryUtils.toOrders;
@@ -135,8 +131,7 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
         return query.getResultList();
     }
 
-    @Override
-    public <P> Page<P> findAll(PropertySelection<P> selection, Specification<T> spec, Pageable pageable) {
+    /*public <P> Page<P> findAll(PropertySelection<P> selection, Specification<T> spec, Pageable pageable) {
         getQuery(spec, pageable);
         Sort sort = pageable == null ? null : pageable.getSort();
         TypedQuery<P> query = getPropertyQuery(selection, spec, sort);
@@ -150,7 +145,7 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
             return new PageImpl<P>(query.getResultList());
         }
 
-    }
+    }*/
 
 
     @Override
