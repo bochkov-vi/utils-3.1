@@ -9,17 +9,18 @@ import java.util.List;
  * Created by bochkov on 29.08.2014.
  */
 public interface PropertySelectionRepository<T, ID> {
-     <P> List<P> findAll(PropertySelection<P> selection, Specification<T> spec, Number limit);
+    <P> List<P> findAll(PropertySelection<P> selection, Specification<T> spec, Number limit);
 
-     <P> List<P> findAll(PropertySelection<P> selection, Sort sort, Number limit);
+    <P> List<P> findAll(PropertySelection<P> selection, Sort sort, Number limit);
 
-     <P> List<P> findAll(PropertySelection<P> selection, Iterable<ID> ids, Number limit);
+    <P> List<P> findAll(PropertySelection<P> selection, Iterable<ID> ids, Number limit);
 
-     <P> List<P> findAll(PropertySelection<P> selection, Specification<T> spec, Sort sort, Number limit);
+    <P> List<P> findAll(PropertySelection<P> selection, Specification<T> spec, Sort sort, Number limit);
 
     <P> List<P> findAll(PropertySelection<P> selection, Specification<T> spec);
 
     <P> List<P> findAll(PropertySelection<P> selection, Sort sort);
+
 
     <P> List<P> findAll(PropertySelection<P> selection, Iterable<ID> ids);
 

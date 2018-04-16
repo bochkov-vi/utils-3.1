@@ -28,7 +28,9 @@ import static org.springframework.data.jpa.repository.query.QueryUtils.toOrders;
 public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID> implements CustomRepository<T, ID> {
 
     protected final JpaEntityInformation<T, ID> entityInformation;
+
     protected final PropertySelection<ID> idSelection;
+
     protected final EntityManager em;
 
 
@@ -128,6 +130,23 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
         }
         return query.getResultList();
     }
+
+    /*public <P> Page<P> findAll(PropertySelection<P> selection, Specification<T> spec, Pageable pageable) {
+        getQuery(spec, pageable);
+        Sort sort = pageable == null ? null : pageable.getSort();
+        TypedQuery<P> query = getPropertyQuery(selection, spec, sort);
+        if (pageable != null) {
+            query.setFirstResult(pageable.getOffset());
+            query.setMaxResults(pageable.getPageSize());
+            Long total = getCountPropertyQuery(selection, spec, true).getSingleResult();
+            List<P> content = total > pageable.getOffset() ? query.getResultList() : Collections.<P>emptyList();
+            return new PageImpl<P>(content, pageable, total);
+        } else {
+            return new PageImpl<P>(query.getResultList());
+        }
+
+    }*/
+
 
     @Override
     public <P> List<P> findAll(PropertySelection<P> selection, Specification<T> spec) {
