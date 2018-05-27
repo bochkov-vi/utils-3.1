@@ -6,6 +6,8 @@ import org.entity3.IHierarchical;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 
 import javax.faces.component.UIComponent;
@@ -23,8 +25,8 @@ public class CircleHierarchicalValidator {
     private static String CIRCLE_ERROR_MESSAGE = "circleErrorMessage";
 
     @Autowired
-    @Qualifier("jsf-util-messages")
-    protected Properties msg;
+    @Qualifier("jsf-messages")
+    protected ResourceBundleMessageSource msg;
 
     UIInput childsInput;
 
@@ -38,7 +40,7 @@ public class CircleHierarchicalValidator {
         Iterable<IHierarchical> parents = (Iterable<IHierarchical>) parentsInput.getLocalValue();
         if (childs != null && parents != null &&
             Iterables.any(childs, c -> c.isParentOf(parents) || Iterables.contains(parents, c))) {
-            JsfUtil.addErrorMessage(msg.getProperty(CIRCLE_ERROR_MESSAGE));
+            JsfUtil.addErrorMessage(msg.getMessage(CIRCLE_ERROR_MESSAGE,null,LocaleContextHolder.getLocale()));
             fc.renderResponse();
         }
     }
