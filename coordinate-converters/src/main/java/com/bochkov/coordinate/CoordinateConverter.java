@@ -9,19 +9,25 @@ import java.text.ChoiceFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Optional;
 
 /**
- *
  * @author bochkov
  */
 public class CoordinateConverter implements Serializable {
 
     public static char GRADCHAR = '\u00B0';
+
     float min;
+
     float max;
+
     ChoiceFormat suffixForm;
+
     MessageFormat form;
+
     String minusSuffix;
+
     String plusSuffix;
 
 
@@ -50,7 +56,16 @@ public class CoordinateConverter implements Serializable {
         return null;
     }
 
-    public Float getAsObject(String string) {
+
+    public Float getAsFloat(String string) {
+        return Optional.ofNullable(getAsObject(string)).map(Number::floatValue).orElse(null);
+    }
+
+    public Double getAsDouble(String string) {
+        return Optional.ofNullable(getAsObject(string)).map(Number::doubleValue).orElse(null);
+    }
+
+    public Number getAsObject(String string) {
         if (string != null && !string.trim().isEmpty()) {
             String[] data = string.split("[^0-9,.]+");
             if (data.length > 0) {
@@ -67,15 +82,15 @@ public class CoordinateConverter implements Serializable {
                 if (string.toUpperCase().contains(minusSuffix)) {
                     v = v * -1;
                 }
-                return new Float(v);
+                return (float) v;
             }
         }
         return null;
     }
 
-    public String getAsString(Float o) {
+    public String getAsString(Number o) {
         if (o != null) {
-            Float v = (Float) o;
+            Float v = (Float) o.floatValue();
             float[] gm = toGradMin(v);
             if (gm != null) {
                 return form.format(new Object[]{gm[0], gm[1], Math.signum(v)});

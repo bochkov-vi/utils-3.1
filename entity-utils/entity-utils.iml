@@ -10,6 +10,7 @@
         <setting name="provider-name" value="" />
         <datasource-mapping>
           <factory-entry name="entity-utils" />
+          <factory-entry name="sonrol-zones-pu" />
         </datasource-mapping>
         <deploymentDescriptor name="persistence.xml" url="file://$MODULE_DIR$/src/main/resources/META-INF/persistence.xml" />
       </configuration>
