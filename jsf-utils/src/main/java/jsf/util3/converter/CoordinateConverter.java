@@ -27,7 +27,7 @@ public class CoordinateConverter extends com.bochkov.coordinate.CoordinateConver
 
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object o) {
-        return getAsString(((Number) o).floatValue());
+        return getAsString(((Number) o));
     }
 
 }

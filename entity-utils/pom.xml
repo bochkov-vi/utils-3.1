@@ -9,7 +9,7 @@
     </parent>
     <artifactId>entity-utils</artifactId>
 
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <name>entity-utils</name>
     <url>http://maven.apache.org</url>
     <properties>
@@ -18,12 +18,13 @@
         <jodatime.version>2.9.7</jodatime.version>
         <eclipselink.version>2.6.4</eclipselink.version>
         <guava.version>21.0</guava.version>
-        <spring.data.jpa.version>1.10.6.RELEASE</spring.data.jpa.version>
+        <spring.data.jpa.version>1.11.16.RELEASE</spring.data.jpa.version>
     </properties>
     <build>
         <plugins>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.0</version>
                 <configuration>
                     <excludes>
                         <exclude>**/test/**</exclude>
@@ -43,31 +44,32 @@
                 </executions>
             </plugin>
             <plugin>
-                <artifactId>eclipselink-staticweave-maven-plugin</artifactId>
-                <groupId>au.com.alderaan</groupId>
-                <version>1.0.4</version>
-                <configuration>
-                    <logLevel>FINE</logLevel>
-                </configuration>
+                <groupId>de.empulse.eclipselink</groupId>
+                <artifactId>staticweave-maven-plugin</artifactId>
+                <version>1.0.0</version>
                 <executions>
                     <execution>
+                        <phase>process-classes</phase>
                         <goals>
                             <goal>weave</goal>
                         </goals>
-                        <phase>process-classes</phase>
+                        <configuration>
+                            <persistenceXMLLocation>META-INF/persistence.xml</persistenceXMLLocation>
+                            <logLevel>ALL</logLevel>
+                        </configuration>
                     </execution>
                 </executions>
                 <dependencies>
                     <dependency>
                         <groupId>org.eclipse.persistence</groupId>
-                        <artifactId>eclipselink</artifactId>
+                        <artifactId>org.eclipse.persistence.jpa</artifactId>
                         <version>${eclipselink.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
+                <version>3.8.0</version>
                 <configuration>
                     <target>1.8</target>
                     <source>1.8</source>
@@ -75,8 +77,10 @@
             </plugin>
 
         </plugins>
+
     </build>
     <dependencies>
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -118,13 +122,15 @@
         <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
-            <version>20030211.134440</version>
+            <version>1.9.3</version>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
-            <version>20040616</version>
+            <version>3.0</version>
         </dependency>
 
     </dependencies>
+
+
 </project>
